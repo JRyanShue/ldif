@@ -682,6 +682,7 @@ class StructuredImplicit(object):
       self._world2local = self._compute_world2local()
     return self._world2local
 
+  # Ti!
   def _compute_world2local(self):
     """Computes a transformation to the local element frames for encoding."""
     # We assume the center is an XYZ position for this transformation:

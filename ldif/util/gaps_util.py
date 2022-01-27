@@ -80,7 +80,8 @@ def mshview(mesh, camera='fixed'):
       file_util.write_mesh(lpath, m)
     cmd = '%s/mshview %s%s' % (path_util.gaps_path(), mshpath, init_camera)
     log.info(cmd)
-    sp.check_output(cmd, shell=True)
+    sp.call(cmd, shell=True)
+    # sp.check_output(cmd, shell=True)
 
 
 def grdview(volume, world2grid=None):

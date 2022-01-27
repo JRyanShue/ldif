@@ -192,7 +192,7 @@ def main(argv):
   log.set_level(FLAGS.log_level)
   tf.disable_v2_behavior()
 
-  gpu_util.get_free_gpu_memory(0)
+  # gpu_util.get_free_gpu_memory(0)
   if FLAGS.use_gpu_for_tensorflow and FLAGS.use_inference_kernel:
     log.info('Limiting TensorFlow memory by 1GB so the inference kernel'
              ' has enough left over to run.')

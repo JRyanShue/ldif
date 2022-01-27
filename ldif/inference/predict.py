@@ -99,6 +99,7 @@ class TrainedNetwork(object):
                     use_gpu=True,
                     **kwargs):
     """Creates a TrainedModel from a model directory root and name."""
+    print('model_directory:', model_directory)
     experiment = experiments.Experiment(model_directory, model_name,
                                         experiment_name)
     return cls.from_experiment(experiment, xid, ckpt_idx, use_temp_ckpts,

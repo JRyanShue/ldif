@@ -225,6 +225,7 @@ def point_encoder(points, output_dimensionality, model_config):
   batch_size = points.get_shape().as_list()[0]
   # [..., N, 3] inputs.
   if model_config.hparams.pe == 'pn':
+    # Choose pointnet function
     if model_config.hparams.udp == 't':
       pointnet_fun = pointnet.pointnet_depr
       kwargs = {}
@@ -298,6 +299,7 @@ class StructuredImplicitModel(object):
           if self._model_config.hparams.elr != 1.0:
             explicit_parameters = lr_mult(self._model_config.hparams.elr)(
                 explicit_parameters)
+      # Use StructuredImplicit class
       sif = structured_implicit_function.StructuredImplicit.from_activation(
           self._model_config, explicit_parameters, self)
       # Now we can compute world2local

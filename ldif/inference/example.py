@@ -206,17 +206,22 @@ class InferenceExample(object):
     """Creates an example from a meshes2dataset mesh subdirectory."""
     if dirpath[-1] == '/':
       dirpath = dirpath[:-1]
+    print(os.path.basename(dirpath))
     mesh_hash = os.path.splitext(os.path.basename(dirpath))[0]
+    print(mesh_hash)
     prepath = dirpath[:dirpath.rfind(mesh_hash)]
+    print(prepath)
     assert prepath[-1] == '/'
     prepath = prepath[:-1]
     split, synset = prepath.split('/')[-2:]
+    print(split, synset)
     ex = cls(split=split, synset_or_cat=synset,
              mesh_hash=mesh_hash, dynamic=True, verbose=verbose)
     # pylint: disable=protected-access
     ex._tx_path = f'{dirpath}/orig_to_gaps.txt'
     ex._dodeca_depth_and_normal_path = f'{dirpath}/depth_and_normals.npz'
-    ex._gt_path = f'{dirpath}/mesh_orig.ply'
+    # ex._gt_path = f'{dirpath}/mesh_orig.ply'
+    ex._gt_path = f'{dirpath}.ply'
     ex._directory_root = dirpath
     ex._grid_path = f'{dirpath}/coarse_grid.grd'
     # pylint: enable=protected-access
@@ -741,10 +746,12 @@ class InferenceExample(object):
 
   @property
   def gt_path(self):
+    # print(self._gt_path)
     if self._gt_path is None:
       self._gt_path = ('/DATA_PATH/occnet-plys/'
                        '%s/%s/%s/model_occnet.ply') % (self.split, self.synset,
                                                        self.mesh_hash)
+    # print(self._gt_path)
     return self._gt_path
 
   @property
@@ -807,6 +814,8 @@ class InferenceExample(object):
   @property
   def gt_mesh(self):
     if self._gt_mesh is None:
+      print('asdf')
+      print(self.gt_path)
       self._gt_mesh = file_util.read_mesh(self.gt_path)
     return self._gt_mesh
 

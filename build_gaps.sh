@@ -68,7 +68,9 @@ echo "	cd qview; \$(MAKE) \$(TARGET)" >> ./apps/Makefile
 # On MacOS, using OSMesa is more difficult, so we don't
 if [[ ! $(uname -s) == Darwin* ]]
 then
+  # echo "Building GAPS with 8 threads and OSMesa support."
   make mesa -j8
+  # make -j8
 else
   make -j8
 fi

@@ -3,3 +3,10 @@ ldif/*/__pycache__
 ldif/gaps
 ldif/ldif2mesh/ldif2mesh
 .DS_Store
+2obj_model
+env
+input_meshes
+input_meshes_eval
+test_dataset
+test_ds
+tmp.grd
