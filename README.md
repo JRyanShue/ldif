@@ -17,6 +17,11 @@ All .py and .sh files in the top-level
 The rest of this README provides information on initial setup and basic
 documentation for those files. For additional documentation, please see each file.
 
+## Notes - J. Ryan Shue
+
+Dataset parsing: 
+train.py (main) -> local_inputs.py (make_dataset) -> process_element.py (parse_example -> _example_dict_tf_func_wrapper -> load_example_dict) -> example.py (from_directory (InferenceExample class) -> uniform_samples, etc.) -> gaps_util.py ()
+
 ## Environment
 
 To set up the LDIF/SIF environment, follow these steps:

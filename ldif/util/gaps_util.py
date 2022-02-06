@@ -151,6 +151,7 @@ def _gapsview(d,
 def read_pts_file(path):
   """Reads a .pts or a .sdf point samples file."""
   _, ext = os.path.splitext(path)
+  log.verbose('Reading from path: ' + path)
   assert ext in ['.sdf', '.pts']
   l = 4 if ext == '.sdf' else 6
   with file_util.open_file(path, 'rb') as f:

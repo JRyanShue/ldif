@@ -204,6 +204,7 @@ class InferenceExample(object):
   @classmethod
   def from_directory(cls, dirpath, verbose=True):
     """Creates an example from a meshes2dataset mesh subdirectory."""
+    print('from_directory')
     if dirpath[-1] == '/':
       dirpath = dirpath[:-1]
     print(os.path.basename(dirpath))

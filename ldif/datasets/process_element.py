@@ -28,7 +28,7 @@ from ldif.util.file_util import log
 # pylint: enable=g-bad-import-order
 
 
-def load_example_dict(example_directory, log_level=None):
+def load_example_dict(example_directory, log_level='verbose'):  # log_level=None
   """Loads an example from disk and makes a str:numpy dictionary out of it."""
   if log_level:
     log.set_level(log_level)
@@ -136,8 +136,10 @@ def parse_tf_example(example_proto):
 
 # Cannot print within here, I think because eager execution disabled.
 def _example_dict_tf_func_wrapper(mesh_orig_path):
+  # tf.enable_eager_execution()
   mesh_orig_path = mesh_orig_path.decode(sys.getdefaultencoding())
-  print('mesh_orig_path:', mesh_orig_path)
+  # print('mesh_orig_path:', mesh_orig_path)
+  # Example mesh_orig_path (str): /mnt/c/users/jryan/Documents/GitHub/ldif/2obj_ds/train/animal/blub/mesh_orig.ply
   assert '/mesh_orig.ply' in mesh_orig_path
   example_directory = mesh_orig_path.replace('/mesh_orig.ply', '')
   d = load_example_dict(example_directory)
