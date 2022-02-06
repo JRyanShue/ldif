@@ -36,6 +36,7 @@ def preprocess(model_config):
   """Generates a training example object from the model config."""
   # TODO(kgenova) Check if dataset is shapenet. If so, return a ShapeNet
   # training example.
+  print('Preprocessing...')
   training_example = shapenet.ShapeNetExample(model_config)
 
   # TODO(kgenova) Look at the model config and verify that nothing is missing.

@@ -137,6 +137,8 @@ def sif_transcoder(model_config):
 
   imp_net = model.StructuredImplicitModel(model_config, 'imp_net')
 
+  # print('sif transcoder:')
+  # THIS IS WHERE THE FEED FORWARD IS CALLED
   prediction = imp_net.forward(observation)
   # model_config.export_signature_def_map[
   #     'autoencoder'] = prediction.export_signature_def()

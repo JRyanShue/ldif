@@ -14,6 +14,7 @@
 # Lint as: python3
 """A local tf.Dataset wrapper for LDIF."""
 
+from fileinput import filename
 import os
 import sys
 import time
@@ -133,8 +134,10 @@ def parse_tf_example(example_proto):
           d['surface_point_samples'])
 
 
+# Cannot print within here, I think because eager execution disabled.
 def _example_dict_tf_func_wrapper(mesh_orig_path):
   mesh_orig_path = mesh_orig_path.decode(sys.getdefaultencoding())
+  print('mesh_orig_path:', mesh_orig_path)
   assert '/mesh_orig.ply' in mesh_orig_path
   example_directory = mesh_orig_path.replace('/mesh_orig.ply', '')
   d = load_example_dict(example_directory)
@@ -144,7 +147,22 @@ def _example_dict_tf_func_wrapper(mesh_orig_path):
 
 
 def parse_example(filename):
+  
   """A tensorflow function to return a dataset element when mapped"""
+
+  # with tf.Session() as sess:
+  #   print('Parsing file:', filename.eval())
+
+  # tf.enable_eager_execution()
+
+  # def print_tensor_string(tensor):
+  #     # you should decode bytes type to string type
+  #     print('print_tensor_string')
+  #     print("Parsing file: ", bytes.decode(tensor), type(bytes.decode(tensor)))
+  #     return tensor
+
+  # print('Filename:', tf.py_func(print_tensor_string, [filename], tf.string))
+    
   return tf.py_func(_example_dict_tf_func_wrapper, [filename], [
           tf.float32, tf.float32, tf.string, tf.float32, tf.float32, tf.float32,
           tf.float32])

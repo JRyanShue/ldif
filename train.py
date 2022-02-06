@@ -189,7 +189,8 @@ def main(argv):
       split=FLAGS.split)
 
   # Sets up the hyperparameters and tf.Dataset
-  model_config = build_model_config(dataset)
+  model_config = build_model_config(dataset)  # model_config contains dataset info
+  print('Config built.')
 
   # Generates the graph for a single train step, including summaries
   shared_launcher.sif_transcoder(model_config)
@@ -258,7 +259,9 @@ def main(argv):
             [model_config.train_op, summary_op, model_config.loss])
         writer.add_summary(summaries, i)
       else:
+        print(model_config.train_op, model_config.loss)
         _, loss = session.run([model_config.train_op, model_config.loss])
+        print(_)
       if not (i % log_every):
         end_time = time.time()
         steps_per_second = float(log_every) / (end_time - start_time)

@@ -111,6 +111,7 @@ class ShapeNetExample(object):
 
   def __init__(self, model_config):
     """Preprocesses a batch of shapenet training examples."""
+    print('initializing ShapeNetExample')
     self._depth_renders = None
     self._lum_renders = None
     self._chosen_renders = None
@@ -123,6 +124,7 @@ class ShapeNetExample(object):
     self._random_lum_render = None
     self._all_surface_points_from_depth = None
     ds = model_config.inputs['dataset']
+    # print('ps: ', ds.surface_point_samples)
     # if hasattr(ds, 'surface_point_samples'):
     # if (model_config.inputs['proto'] in
     #     [
@@ -132,7 +134,7 @@ class ShapeNetExample(object):
     # else:
     #   points_length = 100000
     self._full_zero_set_points_and_normals = tf.reshape(
-        model_config.inputs['dataset'].surface_point_samples,
+        model_config.inputs['dataset'].surface_point_samples,  # (batch_size, 10000, 6)
         [model_config.hparams.bs, points_length, 6])
     # else:
     #   self._full_zero_set_points_and_normals = None

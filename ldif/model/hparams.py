@@ -516,7 +516,7 @@ def build_ldif_hparams():
   d['mfc'] = 512
   d['ips'] = 32
   d['ipe'] = 't'
-  return tf.contrib.training.HParams(**d)
+  return tf.contrib.training.HParams(**d)  # kwargs - inputs all hparams as a dictionary
 
 
 def build_sif_hparams():

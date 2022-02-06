@@ -30,6 +30,7 @@ from ldif.util.file_util import log
 
 def _make_optimized_dataset(directory, batch_size, mode, split):
   filenames = glob.glob(f'{directory}/optimized/{split}/*.tfrecords')
+  print('FILENAMES:', filenames)
   log.verbose(f'Making dataset from the following files: {filenames}')
   dataset = tf.data.TFRecordDataset(filenames=filenames, compression_type='GZIP',
         buffer_size=None, num_parallel_reads=8)
@@ -66,12 +67,11 @@ def build_dataset_obj(dataset_items, bs):
 
 
 
-
 def make_dataset(directory, batch_size, mode, split):
   """Generates a one-shot style tf.Dataset."""
   assert split in ['train', 'val', 'test']
   # Detect if an optimized dataset exists:
-  if os.path.isdir(f'{directory}/optimized'):
+  if os.path.isdir(f'{directory}/optimized' and False):  # if os.path.isdir(f'{directory}/optimized'):
     log.info(f'Optimized dataset detected at {directory}/optimized')
     return _make_optimized_dataset(directory, batch_size, mode, split)
   log.info(f'No optimized preprocessed dataset found at {directory}/optimized. '
@@ -79,6 +79,9 @@ def make_dataset(directory, batch_size, mode, split):
           'present, please rerun meshes2dataset with --optimize.')
 
   dataset = tf.data.Dataset.list_files(f'{directory}/{split}/*/*/mesh_orig.ply')
+  print('Dataset:', dataset)
+  # for element in dataset:
+  #   print('Dataset element:', element)
   log.info('Mapping...')
   if mode == 'train':
     dataset = dataset.shuffle(buffer_size=2 * batch_size)

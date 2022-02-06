@@ -165,6 +165,8 @@ class SingleViewDepthEncoder(TrainedNetwork):
   def __init__(self, job, ckpt, use_gpu, **kwargs):
     super(SingleViewDepthEncoder, self).__init__(job, ckpt, use_gpu, **kwargs)
 
+    print('init single view depth encoder')
+
     with self.graph.as_default():
       model_config = self.job.model_config
       model_config.inputs = shapenet.build_placeholder_interface(
@@ -216,6 +218,7 @@ class DepthEncoder(TrainedNetwork):
   """Maps from a dodecahedron of depth images to shape elements."""
 
   def __init__(self, job, ckpt, use_gpu, **kwargs):
+    print('init depth encoder')
     super(DepthEncoder, self).__init__(job, ckpt, use_gpu, **kwargs)
 
     with self.graph.as_default():
@@ -223,6 +226,7 @@ class DepthEncoder(TrainedNetwork):
       model_config.hparams.bs = 1
       model_config.inputs = shapenet.build_placeholder_interface(model_config)
 
+      print('Model config:', model_config)
       training_example = preprocess.preprocess(model_config)
       self.depth_input = model_config.inputs['dataset'].depth_renders
       self.points_input = model_config.inputs['dataset'].surface_point_samples

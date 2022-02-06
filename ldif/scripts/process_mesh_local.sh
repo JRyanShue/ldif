@@ -34,9 +34,12 @@ fi
 mkdir -p $outdir || true
 
 mesh_orig=${outdir}/mesh_orig.${mesh_in##*.}
+echo ${mesh_orig}
+# Soft link from mesh_in to mesh_orig -- like a shortcut in Windows
 ln -s $mesh_in $mesh_orig
 
 mesh=${outdir}/model_normalized.obj
+echo ${mesh}
 # Step 0) Normalize the mesh before applying all other operations.
 ${gaps}/msh2msh $mesh_orig $mesh -scale_by_pca -translate_by_centroid \
   -scale 0\.25 -debug_matrix ${outdir}/orig_to_gaps.txt

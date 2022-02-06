@@ -15,6 +15,7 @@
 """Example models."""
 
 import importlib
+from ldif import training
 
 # LDIF is an internal package, should be imported last.
 # pylint: disable=g-bad-import-order
@@ -38,6 +39,8 @@ class Observation(object):
   """An observation that is seen by a network."""
 
   def __init__(self, model_config, training_example):
+    print(model_config)
+    print(training_example)
     # Auxiliaries:
     samp = model_config.hparams.samp
     if 'p' in samp:
@@ -280,6 +283,8 @@ class StructuredImplicitModel(object):
 
   def _global_local_forward(self, observation):
     """A forward pass that include both template and element inference."""
+    print('Surface points:', observation.surface_points)  # (1, 10000, 3)
+    print('Normals:', observation.normals)  # (1, 10000, 3)
     with tf.name_scope(self._name + '/forward'):
       reuse = self._forward_call_count > 0
       explicit_element_length = structured_implicit_function.element_explicit_dof(
@@ -299,20 +304,24 @@ class StructuredImplicitModel(object):
           if self._model_config.hparams.elr != 1.0:
             explicit_parameters = lr_mult(self._model_config.hparams.elr)(
                 explicit_parameters)
-      # Use StructuredImplicit class
+      # Use StructuredImplicit class (get ellipsoids from 32xM dim vector)
       sif = structured_implicit_function.StructuredImplicit.from_activation(
           self._model_config, explicit_parameters, self)
-      # Now we can compute world2local
+      # Now we can compute world2local (Ti transformation)
       world2local = sif.world2local
 
       if implicit_embedding_length > 0:
         with tf.variable_scope(self._name + '/forward', reuse=reuse):
           with tf.variable_scope('implicit_embedding_net'):
+            # Calculate local points/normals: 1024 points/normals for each of 32 features
             local_points, local_normals, _, _ = geom_util.local_views_of_shape(
                 observation.surface_points,
                 world2local,
                 local_point_count=self._model_config.hparams.lpc,
                 global_normals=observation.normals)
+            # print('Local Points:', local_points)
+            # print('Local Points:', local_normals)
+            # print(local_points[0][0])
             # Output shapes are both [B, EC, LPC, 3].
             if 'n' not in self._model_config.hparams.samp:
               flat_point_features = tf.reshape(local_points, [
@@ -326,13 +335,19 @@ class StructuredImplicitModel(object):
                       self._model_config.hparams.sc,
                       self._model_config.hparams.lpc, 6
                   ])
+            # print(flat_point_features)
+            # Same as before, but point and normal are concatenated for a 6-dim vector
             encoded_iparams = point_encoder(flat_point_features,
                                             self._model_config.hparams.ips,
                                             self._model_config)
+            # print(encoded_iparams)
+            # 32 vectors of length 32 (N x M)
             iparams = tf.reshape(encoded_iparams, [
                 self._model_config.hparams.bs, self._model_config.hparams.sc,
                 self._model_config.hparams.ips
             ])
+            # print(iparams)
+            # [Batch x N x M]
         sif.set_iparams(iparams)
         embedding = tf.concat([
             explicit_embedding,
