@@ -156,7 +156,8 @@ def read_pts_file(path):
   l = 4 if ext == '.sdf' else 6
   with file_util.open_file(path, 'rb') as f:
     points = np.fromfile(f, dtype=np.float32)
-  points = np.reshape(points, [-1, l])
+  points = np.reshape(points, [-1, l])  # Reshape from 1D to 2D, with l elements per row.
+  log.verbose('Points read:\n' + points)
   return points
 
 
