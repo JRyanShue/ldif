@@ -1,6 +1,4 @@
 
-mkdir
-
 for CATEGORY in input_meshes_shapenet_obj/shapenet/train/*
 do 
     for FILE in $CATEGORY/*
