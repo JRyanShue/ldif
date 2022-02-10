@@ -22,6 +22,11 @@ documentation for those files. For additional documentation, please see each fil
 Dataset parsing: 
 train.py (main) -> local_inputs.py (make_dataset) -> process_element.py (parse_example -> _example_dict_tf_func_wrapper -> load_example_dict) -> example.py (from_directory (InferenceExample class) -> uniform_samples, etc.) -> gaps_util.py (read_pts_file, etc.) -> file_util.py (open_file) -> base_util.py (StandardFileSystem.open)
 
+Uses numpy to read .sdf and .pts files. These file extensions don't mean anything, just part of the name
+
+Ti transformation:
+
+
 ## Environment
 
 To set up the LDIF/SIF environment, follow these steps:

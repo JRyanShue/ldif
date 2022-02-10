@@ -11,4 +11,6 @@ input_meshes
 input_meshes_eval
 test_dataset
 test_ds
-tmp.grd
+*.grd
+*.obj
+*.ply

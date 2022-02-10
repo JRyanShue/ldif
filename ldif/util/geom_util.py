@@ -259,6 +259,8 @@ def local_views_of_shape(global_points,
   # If we made an intermediate tensor with shape [batch_size, frame_count,
   #   global_point_count, 3] -> 64 * 25 * 100000 * 3 * 4 = 1.8 Gb -> bad.
 
+  print('local_views_of_shape')
+
   batch_size, _, _ = global_points.get_shape().as_list()
   if zeros_invalid:
     # If we just set the global points to be very far away, they won't be a

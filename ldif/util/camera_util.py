@@ -97,18 +97,34 @@ def roll_pitch_yaw_to_rotation_matrices(roll_pitch_yaw):
      Tensor with shape [..., 3, 3]. The 3x3 rotation matrices corresponding to
      the input roll-pitch-yaw angles.
   """
+  print('roll_pitch_yaw_to_rotation_matrices')
+  # print(type(roll_pitch_yaw))
   roll_pitch_yaw = tf.convert_to_tensor(roll_pitch_yaw)
+  # print(type(roll_pitch_yaw))
 
-  cosines = tf.cos(roll_pitch_yaw)
-  sines = tf.sin(roll_pitch_yaw)
-  cx, cy, cz = tf.unstack(cosines, axis=-1)
-  sx, sy, sz = tf.unstack(sines, axis=-1)
+  cosines = tf.cos(roll_pitch_yaw)  # (1, 32, 3)
+  sines = tf.sin(roll_pitch_yaw)  # (1, 32, 3)
+  # print('cosines:', cosines)
+  # print('sines:', sines)
+  cx, cy, cz = tf.unstack(cosines, axis=-1)  # (1, 32) each
+  # print('cx:', cx)
+  # print('cy:', cy)
+  # print('cz:', cz)
+  sx, sy, sz = tf.unstack(sines, axis=-1)  # (1, 32) each
+  # print('sx:', sx)
+  # print('sy:', sy)
+  # print('sz:', sz)
   # pyformat: disable
   rotation = tf.stack(
       [cz * cy, cz * sy * sx - sz * cx, cz * sy * cx + sz * sx,
        sz * cy, sz * sy * sx + cz * cx, sz * sy * cx - cz * sx,
-       -sy, cy * sx, cy * cx], axis=-1)
+       -sy, cy * sx, cy * cx], axis=-1)  # (1, 32, 9)
+  print('rotation:', rotation)
   # pyformat: enable
-  shape = tf.concat([tf.shape(rotation)[:-1], [3, 3]], axis=0)
-  rotation = tf.reshape(rotation, shape)
+  shape = tf.concat([tf.shape(rotation)[:-1], [3, 3]], axis=0)  # (4,)
+  print('shape:', shape)
+  print(tf.concat([tf.shape(rotation)[:-1], [3, 3]], axis=0))
+  print(tf.reshape(rotation, shape))
+  rotation = tf.reshape(rotation, shape)  # (1, 32, 3, 3)
+  print('rotation:', rotation)
   return rotation

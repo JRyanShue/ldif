@@ -37,14 +37,19 @@ RADII_EPS = 1e-10
 
 
 def _unflatten(model_config, vector):
+  log.set_level('verbose')
+  # vector shape: (1, 32, 10)
+  # log.verbose('Unflattening vector of shape %s.' % str(vector.shape))
   """Given a flat shape vector, separates out the individual parameter sets."""
-  radius_shape = element_radius_shape(model_config)
-  radius_len = int(np.prod(radius_shape))
+  radius_shape = element_radius_shape(model_config)  # [6]
+  radius_len = int(np.prod(radius_shape))  # 6
+  # log.verbose('radius_len: %d' % radius_len)
   assert len(radius_shape) == 1  # If the radius is a >1 rank tensor, unpack it.
   explicit_param_count = 1  # A single constant.
   # First, determine if there are implicit parameters present.
-  total_explicit_length = explicit_param_count + 3 + radius_len
-  provided_length = vector.get_shape().as_list()[-1]
+  # radius_len: 6 scalars that determine tilt and radius in each of 3 axes
+  total_explicit_length = explicit_param_count + 3 + radius_len  # =10 in LDIF
+  provided_length = vector.get_shape().as_list()[-1]  # =10 in LDIF
   # log.info('Provided len, explicit len: %i, %i' %
   # (provided_length, total_explicit_length))
   if provided_length > total_explicit_length:
@@ -58,6 +63,7 @@ def _unflatten(model_config, vector):
         vector, [explicit_param_count, 3, radius_len, expected_implicit_length],
         axis=-1)
   elif provided_length == total_explicit_length:
+    # log.verbose('provided_length == total_explicit_length')
     constant, center, radius = tf.split(
         vector, [explicit_param_count, 3, radius_len], axis=-1)
     iparams = None
@@ -121,11 +127,16 @@ def element_center_shape(model_config):
 
 
 def element_radius_shape(model_config):
+  # log.set_level('verbose')
   if model_config.hparams.r == 'iso':
+    log.verbose('Using isotropic radius.')
     return [1]
   elif model_config.hparams.r == 'aa':
+    log.verbose('Using anisotropic radius.')
     return [3]
+  # Used in LDIF
   elif model_config.hparams.r == 'cov':
+    log.verbose('Using covariant radius.')
     return [6]
   else:
     raise ValueError('Unrecognized radius hyperparameter: %s' %
@@ -323,20 +334,24 @@ class StructuredImplicitNp(object):
 
 
 def homogenize(m):
+  # log.info('m: %s' % m)  # (1, 32, 3, 3)
   """Adds homogeneous coordinates to a [..., N,N] matrix."""
   batch_rank = len(m.get_shape().as_list()) - 2
   batch_dims = m.get_shape().as_list()[:-2]
   n = m.get_shape().as_list()[-1]
   assert m.get_shape().as_list()[-2] == n
-  right_col = np.zeros(batch_dims + [3, 1], dtype=np.float32)
-  m = tf.concat([m, right_col], axis=-1)
+  right_col = np.zeros(batch_dims + [3, 1], dtype=np.float32)  # (1, 32, 3, 1)
+  # log.info('right_col: %s' % str(right_col.shape))
+  m = tf.concat([m, right_col], axis=-1)  # (1, 32, 3, 4)
   lower_row = np.pad(
       np.zeros(batch_dims + [1, 3], dtype=np.float32),
       [(0, 0)] * batch_rank + [(0, 0), (0, 1)],
       mode='constant',
       constant_values=1.0)
-  lower_row = tf.constant(lower_row)
-  return tf.concat([m, lower_row], axis=-2)
+  lower_row = tf.constant(lower_row)  # (1, 32, 1, 4)
+  # log.info('lower_row: %s' % lower_row)
+  # log.info('tf.concat([m, lower_row], axis=-2): %s' % tf.concat([m, lower_row], axis=-2))
+  return tf.concat([m, lower_row], axis=-2)  # (1, 32, 4, 4)
 
 
 def symgroup_equivalence_classes(model_config):
@@ -471,6 +486,7 @@ class StructuredImplicit(object):
     batching_dims = constants.get_shape().as_list()[:-2]
     batching_rank = len(batching_dims)
     if batching_rank == 0:
+      # log.info('batching_rank == 0')
       constants = tf.expand_dims(constants, axis=0)
       radii = tf.expand_dims(radii, axis=0)
       centers = tf.expand_dims(centers, axis=0)
@@ -498,19 +514,28 @@ class StructuredImplicit(object):
     ensure_net_if_needed(model_config, net)
     constant, center, radius, iparam = _unflatten(model_config, activation)
 
+    # log.info('from_activation')
+    # Used in LDIF
     if model_config.hparams.cp == 'a':
+      # log.info('a')
       constant = -tf.abs(constant)
     elif model_config.hparams.cp == 's':
+      # log.info('s')
       constant = tf.sigmoid(constant) - 1
     radius_var = tf.sigmoid(radius[..., 0:3])
     max_blob_radius = 0.15
     radius_var *= max_blob_radius
     radius_var = radius_var * radius_var
-    if model_config.hparams.r == 'cov':
+
+    if model_config.hparams.r == 'cov':  # True in LDIF
+      # log.info('model_config.hparams.r == cov')
       # radius_rot = sigma(radius[..., 3:], 50.0)
       max_euler_angle = np.pi / 4.0
+      # log.info('radius.shape: ' + str(radius.shape))
       radius_rot = tf.clip_by_value(radius[..., 3:], -max_euler_angle,
                                     max_euler_angle)
+      # log.info('radius_rot.shape: ' + str(radius_rot.shape))
+
       # radius_rot *= max_euler_angle
       radius = tf.concat([radius_var, radius_rot], axis=-1)
     else:
@@ -678,49 +703,65 @@ class StructuredImplicit(object):
   @property
   def world2local(self):
     """The world2local transformations for each element. Shape [B, EC, 4, 4]."""
+    log.verbose('world2local')
     if self._world2local is None:
       self._world2local = self._compute_world2local()
     return self._world2local
 
-  # Ti!
+  # Ti calculation!
   def _compute_world2local(self):
     """Computes a transformation to the local element frames for encoding."""
     # We assume the center is an XYZ position for this transformation:
     # TODO(kgenova) Update this transformation to account for rotation.
 
+    log.set_level('verbose')
+    log.verbose('Computing world2local transformations.')
+
     if self._model_config.hparams.tx == 'i':
       return tf.eye(4, batch_shape=[self.batch_size, self.element_count])
 
+    # (True in LDIF)
     if 'c' in self._model_config.hparams.tx:
-      tx = tf.eye(3, batch_shape=[self.batch_size, self.element_count])
+      # log.info('Computing world2local from centers.')
+      tx = tf.eye(3, batch_shape=[self.batch_size, self.element_count])  # (1, 32, 3, 3)
+      # log.info('tx: %s' % tx)
       centers = tf.reshape(self._centers,
-                           [self.batch_size, self.element_count, 3, 1])
-      tx = tf.concat([tx, -centers], axis=-1)
+                           [self.batch_size, self.element_count, 3, 1])  # (1, 32, 3, 1)
+      # log.info('centers: %s' % centers)
+      tx = tf.concat([tx, -centers], axis=-1)  # (1, 32, 3, 4)
+      # log.info('tx: %s' % tx)
       lower_row = tf.constant(
           np.tile(
               np.reshape(np.array([0., 0., 0., 1.]), [1, 1, 1, 4]),
               [self.batch_size, self.element_count, 1, 1]),
-          dtype=tf.float32)
+          dtype=tf.float32)  # (1, 32, 1, 4)
+      # log.info('lower_row: %s' % lower_row)
       tx = tf.concat([tx, lower_row], axis=-2)
+      log.info('tx: %s' % tx)  # (1, 32, 4, 4)
     else:
       tx = tf.eye(4, batch_shape=[self.batch_size, self.element_count])
 
-    # Compute a rotation transformation if necessary:
+    # Compute a rotation transformation if necessary (True in LDIF):
     if ('r' in self._model_config.hparams.tx) and (
         self._model_config.hparams.r == 'cov'):
+      # log.info('Computing world2local from rotation.')
       # Apply the inverse rotation:
       rotation = tf.matrix_inverse(
           camera_util.roll_pitch_yaw_to_rotation_matrices(self._radii[...,
-                                                                      3:6]))
+                                                                      3:6]))  # (1, 32, 3, 3)
+      # log.info('rotation: %s' % rotation)
     else:
       rotation = tf.eye(3, batch_shape=[self.batch_size, self.element_count])
 
-    # Compute a scale transformation if necessary:
+    # Compute a scale transformation if necessary (True in LDIF):
     if ('s' in self._model_config.hparams.tx) and (
         self._model_config.hparams.r in ['aa', 'cov']):
-      diag = self._radii[..., 0:3]
+      # log.info('Computing world2local from scale.')
+      diag = self._radii[..., 0:3]  # (1, 32, 3)
+      # log.info('diag: %s' % diag)
       diag = 1.0 / (tf.sqrt(diag + 1e-8) + 1e-8)
-      scale = tf.matrix_diag(diag)
+      scale = tf.matrix_diag(diag)  # (1, 32, 3, 3)
+      # log.info('scale: %s' % scale)
     else:
       scale = tf.eye(3, batch_shape=[self.batch_size, self.element_count])
 

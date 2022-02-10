@@ -283,8 +283,8 @@ class StructuredImplicitModel(object):
 
   def _global_local_forward(self, observation):
     """A forward pass that include both template and element inference."""
-    print('Surface points:', observation.surface_points)  # (1, 10000, 3)
-    print('Normals:', observation.normals)  # (1, 10000, 3)
+    # print('Surface points:', observation.surface_points)  # (1, 10000, 3)
+    # print('Normals:', observation.normals)  # (1, 10000, 3)
     with tf.name_scope(self._name + '/forward'):
       reuse = self._forward_call_count > 0
       explicit_element_length = structured_implicit_function.element_explicit_dof(
@@ -307,18 +307,25 @@ class StructuredImplicitModel(object):
       # Use StructuredImplicit class (get ellipsoids from 32xM dim vector)
       sif = structured_implicit_function.StructuredImplicit.from_activation(
           self._model_config, explicit_parameters, self)
+      # log.info('explicit_parameters.shape: ' + str(explicit_parameters.shape))
       # Now we can compute world2local (Ti transformation)
       world2local = sif.world2local
+      # (1, 32, 4, 4)
+      # log.info('world2local: ' + str(world2local))
 
       if implicit_embedding_length > 0:
         with tf.variable_scope(self._name + '/forward', reuse=reuse):
           with tf.variable_scope('implicit_embedding_net'):
             # Calculate local points/normals: 1024 points/normals for each of 32 features
+            log.info('observation.surface_points: ' + str(observation.surface_points))
+            log.info('world2local: ' + str(world2local))
+            log.info('Local point count: %i' % self._model_config.hparams.lpc)
+            log.info('observation.normals.shape: ' + str(observation.normals.shape))
             local_points, local_normals, _, _ = geom_util.local_views_of_shape(
-                observation.surface_points,
-                world2local,
-                local_point_count=self._model_config.hparams.lpc,
-                global_normals=observation.normals)
+                observation.surface_points,  # (1, 10000, 3)
+                world2local,  # (1, 32, 4, 4)
+                local_point_count=self._model_config.hparams.lpc,  # 1024
+                global_normals=observation.normals)  # (1, 10000, 3)
             # print('Local Points:', local_points)
             # print('Local Points:', local_normals)
             # print(local_points[0][0])
