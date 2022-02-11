@@ -71,7 +71,7 @@ def make_dataset(directory, batch_size, mode, split):
   """Generates a one-shot style tf.Dataset."""
   assert split in ['train', 'val', 'test']
   # Detect if an optimized dataset exists:
-  if os.path.isdir(f'{directory}/optimized' and False):  # if os.path.isdir(f'{directory}/optimized'):
+  if os.path.isdir(f'{directory}/optimized'):  # if os.path.isdir(f'{directory}/optimized' and False):
     log.info(f'Optimized dataset detected at {directory}/optimized')
     return _make_optimized_dataset(directory, batch_size, mode, split)
   log.info(f'No optimized preprocessed dataset found at {directory}/optimized. '

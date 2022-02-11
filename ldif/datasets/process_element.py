@@ -76,7 +76,8 @@ def load_example_dict(example_directory, log_level='verbose'):  # log_level=None
   log.verbose(f'world2grid: {end_t - start_t}')
   start_t = end_t
 
-  surface_point_samples = e.precomputed_surface_samples_from_dodeca
+  surface_point_samples = e.precomputed_surface_samples_from_dodeca  # (10000, 6)
+  # log.info('surface_point_samples.shape: ' + str(surface_point_samples.shape))
   end_t = time.time()
   log.verbose(f'surface points: {end_t - start_t}')
   log.verbose(f'load_example_dict total time: {end_t - entry_t}')

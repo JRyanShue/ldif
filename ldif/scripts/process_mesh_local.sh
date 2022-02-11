@@ -15,8 +15,8 @@
 
 set -e
 
-mesh_in=$1
-outdir=$2
+mesh_in=$(realpath $1)
+outdir=$(realpath $2)
 ldif_root=$3
 
 dodeca_path=${ldif_root}/data/dodeca_cameras.cam

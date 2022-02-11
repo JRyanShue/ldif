@@ -88,6 +88,7 @@ def to_homogeneous(t, is_point):
   for _ in range(rank):
     paddings.append([0, 0])
   paddings[-1][1] = 1
+  # print('paddings:', paddings)
   return tf.pad(
       t, tf.constant(paddings), mode='CONSTANT', constant_values=padding)
 
@@ -260,6 +261,7 @@ def local_views_of_shape(global_points,
   #   global_point_count, 3] -> 64 * 25 * 100000 * 3 * 4 = 1.8 Gb -> bad.
 
   print('local_views_of_shape')
+  # print('world2local', world2local.shape)  # (1, 32, 4, 4)
 
   batch_size, _, _ = global_points.get_shape().as_list()
   if zeros_invalid:
@@ -278,9 +280,14 @@ def local_views_of_shape(global_points,
   local2world = tf.matrix_inverse(world2local)
 
   # *sigh* oh well, guess we have to do the transform:
+  # Expand global_points tensor to have a global point cloud for each element (that can then be transformed)
+  print('global_points', global_points.shape)  # (1, 10000, 3)
   tiled_global = tf.tile(
-      tf.expand_dims(to_homogeneous(global_points, is_point=True), axis=1),
-      [1, frame_count, 1, 1])
+      # Expand to len 1 batch dimension, and pad with ones (each point's 4th dimension) to increase last dim to 4
+      tf.expand_dims(to_homogeneous(global_points, is_point=True), axis=1),  # (1, 1, 10000, 4)
+      [1, frame_count, 1, 1])  # (1, 32, 10000, 4)
+  # print('tiled_global', tiled_global.shape)
+  # Apply transformation matrix
   all_local_points = tf.matmul(tiled_global, world2local, transpose_b=True)
   distances = tf.norm(all_local_points, axis=-1)
   # thresh = 4.0

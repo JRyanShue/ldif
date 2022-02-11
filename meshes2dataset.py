@@ -85,6 +85,7 @@ flags.DEFINE_boolean(
 def process_one(f, mesh_directory, dataset_directory, skip_existing, log_level):
   """Processes a single mesh, adding it to the dataset."""
   relpath = f.replace(mesh_directory, '')
+  print('relpath:', relpath)
   assert relpath[0] == '/'
   relpath = relpath[1:]
   split, synset = relpath.split('/')[:2]

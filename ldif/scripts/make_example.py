@@ -56,10 +56,16 @@ def mesh_to_example(codebase_root_dir, mesh_path, dirpath, skip_existing, log_le
   # Logging level must be specified because mesh_to_example is an entry point
   # for a subprocess call.
   log.set_level(log_level)
-  ldif_path = path_util.get_path_to_ldif_root()
+  log.info('codebase_root_dir: ' + str(codebase_root_dir))  # ex: /mnt/c/users/jryan/Documents/GitHub/ldif/ldif
+  # log.info(f'Processing {mesh_path}')  # ex: ./input_meshes_shapenet_ply/shapenet/train/02691156/1.ply
+  log.info('dirpath: ' + str(dirpath))  # ex: shapenet_subsample_ds/train/02691156/1/
+  log.info('skip_existing: ' + str(skip_existing))  # ex: True
+  ldif_path = path_util.get_path_to_ldif_root()  # ex: /mnt/c/users/jryan/Documents/GitHub/ldif/ldif
+  # log.info('ldif_path: ' + str(ldif_path))
+  log.info('mesh_path: ' + str(mesh_path))  # ex: ./input_meshes_shapenet_ply/shapenet/train/02691156/1.ply
   if not skip_existing or not os.path.isfile(f'{dirpath}/depth_and_normals.npz'):
     sp.check_output(
-      f'{codebase_root_dir}/scripts/process_mesh_local.sh {mesh_path} {dirpath} {ldif_path}',
+      f'{codebase_root_dir}/scripts/process_mesh_local.sh {mesh_path} {dirpath} {ldif_path}',  # mesh_in is messed up
         shell=True)
     write_depth_and_normals_npz(dirpath, f'{dirpath}/depth_and_normals.npz')
   else:

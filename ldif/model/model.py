@@ -43,7 +43,7 @@ class Observation(object):
     print(training_example)
     # Auxiliaries:
     samp = model_config.hparams.samp
-    if 'p' in samp:
+    if 'p' in samp:  # True in LDIF
       # Then we have access to a point cloud as well:
       self._surface_points = training_example.all_surface_points
       samp = samp.replace('p', '')

@@ -675,6 +675,7 @@ class InferenceExample(object):
 
   @property
   def surface_samples_from_dodeca(self):
+    log.info('generating surface_samples_from_dodeca')
     """10K surface point samples with normals computed from the dodecahedron."""
     if not hasattr(self, '_surface_samples_from_dodeca'):
       depth_ims = self.depth_images.copy() / 1000.0
