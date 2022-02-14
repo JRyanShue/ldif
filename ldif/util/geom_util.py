@@ -262,9 +262,10 @@ def local_views_of_shape(global_points,
 
   print('local_views_of_shape')
   # print('world2local', world2local.shape)  # (1, 32, 4, 4)
-
+  
   batch_size, _, _ = global_points.get_shape().as_list()
   if zeros_invalid:
+    print('zeros_invalid')
     # If we just set the global points to be very far away, they won't be a
     # nearest neighbor
     abs_zero = False
@@ -289,6 +290,7 @@ def local_views_of_shape(global_points,
   # print('tiled_global', tiled_global.shape)
   # Apply transformation matrix
   all_local_points = tf.matmul(tiled_global, world2local, transpose_b=True)
+  # print('all_local_points', all_local_points.shape)  # (1, 32, 10000, 4)
   distances = tf.norm(all_local_points, axis=-1)
   # thresh = 4.0
   # TODO(kgenova) This is potentially a problem because it could introduce

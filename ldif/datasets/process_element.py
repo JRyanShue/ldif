@@ -142,7 +142,8 @@ def _example_dict_tf_func_wrapper(mesh_orig_path):
   # print('mesh_orig_path:', mesh_orig_path)
   # Example mesh_orig_path (str): /mnt/c/users/jryan/Documents/GitHub/ldif/2obj_ds/train/animal/blub/mesh_orig.ply
   assert '/mesh_orig.ply' in mesh_orig_path
-  example_directory = mesh_orig_path.replace('/mesh_orig.ply', '')
+  example_directory = mesh_orig_path.replace('/mesh_orig.ply', '')  # ex: /mnt/c/users/jryan/Documents/GitHub/ldif/2obj_ds/train/animal/bob
+  # log.info('example_directory: ' + str(example_directory))
   d = load_example_dict(example_directory)
   return (d['bounding_box_samples'], d['depth_renders'], d['mesh_name'],
           d['near_surface_samples'], d['grid'], d['world2grid'],
@@ -165,7 +166,10 @@ def parse_example(filename):
   #     return tensor
 
   # print('Filename:', tf.py_func(print_tensor_string, [filename], tf.string))
+
+  # log.info('Parsing file: ' + str(filename))
     
+  # Containerize operation in Tensorflow op, allowing decoding of Tensor
   return tf.py_func(_example_dict_tf_func_wrapper, [filename], [
           tf.float32, tf.float32, tf.string, tf.float32, tf.float32, tf.float32,
           tf.float32])

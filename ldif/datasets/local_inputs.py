@@ -71,14 +71,14 @@ def make_dataset(directory, batch_size, mode, split):
   """Generates a one-shot style tf.Dataset."""
   assert split in ['train', 'val', 'test']
   # Detect if an optimized dataset exists:
-  if os.path.isdir(f'{directory}/optimized'):  # if os.path.isdir(f'{directory}/optimized' and False):
+  if os.path.isdir(f'{directory}/optimized' and False):  # if os.path.isdir(f'{directory}/optimized'):
     log.info(f'Optimized dataset detected at {directory}/optimized')
     return _make_optimized_dataset(directory, batch_size, mode, split)
   log.info(f'No optimized preprocessed dataset found at {directory}/optimized. '
           'Processing dataset elements on the fly. If an IO bottleneck is '
           'present, please rerun meshes2dataset with --optimize.')
 
-  dataset = tf.data.Dataset.list_files(f'{directory}/{split}/*/*/mesh_orig.ply')
+  dataset = tf.data.Dataset.list_files(f'{directory}/{split}/*/*/mesh_orig.ply')  # list of all mesh_orig files
   print('Dataset:', dataset)
   # for element in dataset:
   #   print('Dataset element:', element)
@@ -89,6 +89,7 @@ def make_dataset(directory, batch_size, mode, split):
 
   dataset = dataset.map(process_element.parse_example,
       num_parallel_calls=os.cpu_count())
+  log.info('dataset: ' + str(dataset))
 
   bs = batch_size
   dataset = dataset.batch(bs, drop_remainder=True).prefetch(1)

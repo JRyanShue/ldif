@@ -227,9 +227,11 @@ def point_encoder(points, output_dimensionality, model_config):
   # TODO(kgenova) This could reshape to the batch dimension to support
   batch_size = points.get_shape().as_list()[0]
   # [..., N, 3] inputs.
-  if model_config.hparams.pe == 'pn':
+  if model_config.hparams.pe == 'pn':  # True in LDIF
+    # log.info('model_config.hparams.pe == pn')
     # Choose pointnet function
-    if model_config.hparams.udp == 't':
+    if model_config.hparams.udp == 't':  # True in LDIF
+      # log.info('model_config.hparams.udp == t')
       pointnet_fun = pointnet.pointnet_depr
       kwargs = {}
     else:
@@ -300,7 +302,8 @@ class StructuredImplicitModel(object):
         with tf.variable_scope('explicit_embedding_cnn'):
           explicit_parameters, explicit_embedding = self.inference_fun(
               observation, element_count, explicit_element_length,
-              self._model_config)
+              self._model_config)  # , (1, 2048)
+          # log.info('explicit_embedding: ' + str(explicit_embedding.shape))
           if self._model_config.hparams.elr != 1.0:
             explicit_parameters = lr_mult(self._model_config.hparams.elr)(
                 explicit_parameters)
@@ -317,50 +320,61 @@ class StructuredImplicitModel(object):
         with tf.variable_scope(self._name + '/forward', reuse=reuse):
           with tf.variable_scope('implicit_embedding_net'):
             # Calculate local points/normals: 1024 points/normals for each of 32 features
-            log.info('observation.surface_points: ' + str(observation.surface_points))
-            log.info('world2local: ' + str(world2local))
-            log.info('Local point count: %i' % self._model_config.hparams.lpc)
-            log.info('observation.normals.shape: ' + str(observation.normals.shape))
+            # log.info('observation.surface_points: ' + str(observation.surface_points))
+            # log.info('world2local: ' + str(world2local))
+            # log.info('Local point count: %i' % self._model_config.hparams.lpc)
+            # log.info('observation.normals.shape: ' + str(observation.normals.shape))
             local_points, local_normals, _, _ = geom_util.local_views_of_shape(
                 observation.surface_points,  # (1, 10000, 3)
                 world2local,  # (1, 32, 4, 4)
                 local_point_count=self._model_config.hparams.lpc,  # 1024
                 global_normals=observation.normals)  # (1, 10000, 3)
-            # print('Local Points:', local_points)
-            # print('Local Points:', local_normals)
+            # (1, 32, 1024, 3), (1, 32, 1024, 3)
+            # log.info('Local Points: ' + str(local_points.shape))
+            # log.info('Local Normals: ' + str(local_normals.shape))
             # print(local_points[0][0])
             # Output shapes are both [B, EC, LPC, 3].
+
             if 'n' not in self._model_config.hparams.samp:
+              # log.info('n not in self._model_config.hparams.samp')
               flat_point_features = tf.reshape(local_points, [
                   self._model_config.hparams.bs * self._model_config.hparams.sc,
                   self._model_config.hparams.lpc, 3
               ])
-            else:
+            else:  # LDIF Encoder
+              # log.info('n in self._model_config.hparams.samp')
               flat_point_features = tf.reshape(
                   tf.concat([local_points, local_normals], axis=-1), [
                       self._model_config.hparams.bs *
                       self._model_config.hparams.sc,
                       self._model_config.hparams.lpc, 6
-                  ])
-            # print(flat_point_features)
+                  ])  # (32, 1024, 6)
+            # log.info('flat_point_features: ' + str(flat_point_features.shape))
+
             # Same as before, but point and normal are concatenated for a 6-dim vector
+            # log.info('self._model_config.hparams.ips: ' + str(self._model_config.hparams.ips))
             encoded_iparams = point_encoder(flat_point_features,
-                                            self._model_config.hparams.ips,
-                                            self._model_config)
-            # print(encoded_iparams)
+                                            self._model_config.hparams.ips,  # M: 32
+                                            self._model_config)  # (32, 32)
+            # log.info('encoded_iparams: ' + str(encoded_iparams.shape))
             # 32 vectors of length 32 (N x M)
             iparams = tf.reshape(encoded_iparams, [
                 self._model_config.hparams.bs, self._model_config.hparams.sc,
                 self._model_config.hparams.ips
-            ])
-            # print(iparams)
+            ])  # (1, 32, 32)
+            # log.info('iparams: ' + str(iparams.shape))
             # [Batch x N x M]
         sif.set_iparams(iparams)
+
+        # log.info('explicit_embedding.shape: ' + str(explicit_embedding.shape))
+        # (1, 2048)
+        # Explicit embedding: the activation of the ResNet's 2048-node layer
         embedding = tf.concat([
             explicit_embedding,
             tf.reshape(iparams, [self._model_config.hparams.bs, -1])
         ],
-                              axis=-1)
+                              axis=-1)  # (1, 3072)
+        # log.info('embedding: ' + str(embedding.shape))
       else:
         embedding = explicit_embedding
       self._forward_call_count += 1

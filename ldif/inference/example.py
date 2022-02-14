@@ -650,6 +650,8 @@ class InferenceExample(object):
 
   @property
   def precomputed_surface_samples_from_dodeca(self):
+    # ex: /mnt/c/users/jryan/Documents/GitHub/ldif/2obj_ds/train/animal/bob/surface_samples_from_dodeca.pts
+    # log.info('self.precomputed_surface_samples_from_dodeca_path: ' + str(self.precomputed_surface_samples_from_dodeca_path))
     if not hasattr(self, '_precomputed_surface_samples_from_dodeca'):
       if not self.is_from_directory:
         raise ValueError('Precomputed surface samples are only'
@@ -668,8 +670,10 @@ class InferenceExample(object):
         log.verbose(f'Doubling samples from {full_samples.shape[0]} to'
                     f' {2*full_samples.shape[0]}')
         full_samples = np.tile(full_samples, [2, 1])
+      # log.info('full_samples[np.random.choice(orig_count, self.surface_sample_count, replace=False), :]: ' + str(full_samples[np.random.choice(orig_count, self.surface_sample_count, replace=False), :].shape))
+      # log.info('full_samples[np.random.choice(orig_count, self.surface_sample_count, replace=False)]: ' + str(full_samples[np.random.choice(orig_count, self.surface_sample_count, replace=False)].shape))
       self._precomputed_surface_samples_from_dodeca = (
-          full_samples[np.random.choice(orig_count, self.surface_sample_count, replace=False), :])
+          full_samples[np.random.choice(orig_count, self.surface_sample_count, replace=False), :])  # (10000, 6)
     return self._precomputed_surface_samples_from_dodeca
 
 
