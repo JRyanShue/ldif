@@ -221,22 +221,22 @@ def lr_mult(alpha):
   return _lr_mult
 
 
-def point_encoder(points, output_dimensionality, model_config):
+def point_encoder(points, output_dimensionality, model_config):  # (32, 1024, 6), 32, (32, 32)
   """Encodes a point cloud (either with or without normals) to an embedding."""
-  assert len(points.shape) == 3
+  assert len(points.shape) == 3  # Ex: (32, 1024, 6)
   # TODO(kgenova) This could reshape to the batch dimension to support
   batch_size = points.get_shape().as_list()[0]
   # [..., N, 3] inputs.
   if model_config.hparams.pe == 'pn':  # True in LDIF
-    # log.info('model_config.hparams.pe == pn')
     # Choose pointnet function
     if model_config.hparams.udp == 't':  # True in LDIF
-      # log.info('model_config.hparams.udp == t')
       pointnet_fun = pointnet.pointnet_depr
       kwargs = {}
     else:
       pointnet_fun = pointnet.pointnet
       kwargs = {'use_gpu': model_config.train}
+    
+    # log.info('PointNet Encoder maxpool dimensionality: ' + str(model_config.hparams.mfc))  # 512
     embedding = pointnet_fun(
         points,
         output_feature_count=output_dimensionality,
@@ -244,10 +244,12 @@ def point_encoder(points, output_dimensionality, model_config):
         use_bad_reduce=model_config.hparams.fbp == 'f',
         nerfify=model_config.hparams.hyp == 't',
         maxpool_feature_count=model_config.hparams.mfc,
-        **kwargs)
+        **kwargs)  # (32, 32)
+    # log.info('embedding: ' + str(embedding.shape))
   elif model_config.hparams.pe == 'dg':
     raise ValueError('DGCNN is no longer supported.')
-  embedding = tf.reshape(embedding, [batch_size, output_dimensionality])
+  embedding = tf.reshape(embedding, [batch_size, output_dimensionality])  # (32, 32)
+  # log.info('Returned embedding: ' + str(embedding.shape))
   if len(embedding.shape) != 2 or embedding.get_shape().as_list(
   )[-1] != output_dimensionality:
     raise ValueError(
@@ -269,7 +271,8 @@ class StructuredImplicitModel(object):
       raise ValueError(
           'Invalid StructuredImplicitModel architecture hparam: %s' %
           model_config.hparams.arch)
-    if model_config.hparams.ipe in ['t', 'e']:
+    if model_config.hparams.ipe in ['t', 'e']:  # !!
+      # log.info('using occnet.occnet_decoder')
       self.single_element_implicit_eval_fun = occnet.occnet_decoder
     else:
       self.single_element_implicit_eval_fun = None
@@ -300,11 +303,12 @@ class StructuredImplicitModel(object):
                          (implicit_embedding_length, explicit_element_length))
       with tf.variable_scope(self._name + '/forward', reuse=reuse):
         with tf.variable_scope('explicit_embedding_cnn'):
+          # log.info('observation: ' + str(observation.surface_points.shape))
           explicit_parameters, explicit_embedding = self.inference_fun(
               observation, element_count, explicit_element_length,
-              self._model_config)  # , (1, 2048)
-          # log.info('explicit_embedding: ' + str(explicit_embedding.shape))
-          if self._model_config.hparams.elr != 1.0:
+              self._model_config)  # (1, 32, 10), (1, 2048)
+          # log.info('explicit_parameters: ' + str(explicit_parameters.shape))
+          if self._model_config.hparams.elr != 1.0:  # False in LDIF
             explicit_parameters = lr_mult(self._model_config.hparams.elr)(
                 explicit_parameters)
       # Use StructuredImplicit class (get ellipsoids from 32xM dim vector)
@@ -378,11 +382,15 @@ class StructuredImplicitModel(object):
       else:
         embedding = explicit_embedding
       self._forward_call_count += 1
+      log.info('observation: ' + str(observation))
+      log.info('structured_implicit: ' + str(sif))
+      log.info('embedding: ' + str(embedding))
       return Prediction(self._model_config, observation, sif, embedding)
 
   def forward(self, observation):
     """Evaluates the explicit and implicit parameter vectors as a Prediction."""
-    if self._model_config.hparams.ia == 'p':
+    if self._model_config.hparams.ia == 'p':  # True in LDIF
+      # log.info('self._model_config.hparams.ia == p')
       return self._global_local_forward(observation)
     with tf.name_scope(self._name + '/forward'):
       reuse = self._forward_call_count > 0
@@ -429,6 +437,7 @@ class StructuredImplicitModel(object):
         decoded value of each element's embedding at each of the samples for
         that embedding.
     """
+    # log.info('implicit_parameters: ' + str(implicit_parameters))  # (1, 48, 32)
     # Each element has its own network:
     if self.single_element_implicit_eval_fun is None:
       raise ValueError('The implicit decoder function is None.')
@@ -457,7 +466,8 @@ class StructuredImplicitModel(object):
           raise ValueError(
               'Incompatible hparams. Must use _deprecated_multielement_eval'
               'if requesting separate network weights per shape element.')
-        with tf.variable_scope('all_elements', reuse=False):
+        with tf.variable_scope('all_elements', reuse=False):  # !!
+          # log.info('evaluating OccNet')
           batched_vals = self.single_element_implicit_eval_fun(
               batched_parameters,
               batched_samples,

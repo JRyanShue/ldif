@@ -274,6 +274,7 @@ class Decoder(TrainedNetwork):
 
   def __init__(self, job, ckpt, use_gpu, **kwargs):
     super(Decoder, self).__init__(job, ckpt, use_gpu, **kwargs)
+    # log.info('init decoder')
 
     with self.graph.as_default():
       self.sif_input = tf.placeholder(tf.float32, self.batched_vector_shape)
@@ -297,6 +298,7 @@ class Decoder(TrainedNetwork):
       self.sample_locations_ph = tf.placeholder(
           tf.float32, shape=[self.block_res, self.block_res, self.block_res, 3])
       samples = tf.reshape(self.sample_locations_ph, [1, self.block_res**3, 3])
+      log.info('Using decoder')
       predicted_alg, predicted_locals = structured_implicit.class_at_samples(
           samples, apply_class_transfer=False)
       predicted_class = sdf_util.apply_class_transfer(

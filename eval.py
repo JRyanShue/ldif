@@ -144,6 +144,7 @@ def get_model_root():
 
 
 def load_newest_model():
+  # log.info('load_newest_model')
   """Loads the newest checkpoint of the specified model."""
   model_root = get_model_root()
   model_name = 'sif-transcoder'

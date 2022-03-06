@@ -88,7 +88,7 @@ def to_homogeneous(t, is_point):
   for _ in range(rank):
     paddings.append([0, 0])
   paddings[-1][1] = 1
-  # print('paddings:', paddings)
+  # print('paddings:', paddings)  # [[0, 0], [0, 0], [0, 0], [0, 1]]
   return tf.pad(
       t, tf.constant(paddings), mode='CONSTANT', constant_values=padding)
 

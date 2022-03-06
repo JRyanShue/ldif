@@ -112,11 +112,15 @@ def interpolate(grid, samples, world2grid):
       True where the input samples map outside the supplied grid. The sdf
       tensor will be zero at these locations and there will be no gradient.
   """
+  # log.info('grid: ' + str(grid.shape))  # (1, 32, 32, 32)
+  # log.info('samples: ' + str(samples.shape))  # (1, 32, 3)
+  # log.info('world2grid: ' + str(world2grid.shape))  # (1, 4, 4)
   xyzw_samples = tf.pad(
       samples,
       paddings=tf.constant([[0, 0], [0, 0], [0, 1]]),
       mode='CONSTANT',
-      constant_values=1)
+      constant_values=1)  # Pad a 1 on each point sample
+  log.info('xyzw_samples: ' + str(xyzw_samples.shape))  # (1, 32, 4)
   ensure_shape(samples, [-1, -1, 3])
   batch_size, sample_count = samples.get_shape().as_list()[:2]
   ensure_shape(grid, [batch_size, -1, -1, -1])
@@ -134,9 +138,14 @@ def interpolate(grid, samples, world2grid):
   depth, height, width = grid.get_shape().as_list()[1:]
   max_vals = np.array([[[width, height, depth]]], dtype=np.int32) - 1
   max_vals = tf.constant(max_vals)
+  # log.info('lower_coords: ' + str(lower_coords.shape))  # (1, 32, 3)
+  # log.info('upper_coords: ' + str(upper_coords.shape))  # (1, 32, 3)
+  # log.info('tf.reduce_any(lower_coords < 0, axis=-1, keep_dims=True): ' + str(tf.reduce_any(lower_coords < 0, axis=-1, keep_dims=True).shape))  # (1, 32, 1)
+  # log.info('tf.reduce_any(upper_coords > max_vals, axis=-1, keep_dims=True): ' + str(tf.reduce_any(upper_coords > max_vals, axis=-1, keep_dims=True).shape))  # (1, 32, 1)
   is_invalid = tf.logical_or(
-      tf.reduce_any(lower_coords < 0, axis=-1, keep_dims=True),
-      tf.reduce_any(upper_coords > max_vals, axis=-1, keep_dims=True))
+      tf.reduce_any(lower_coords < 0, axis=-1, keep_dims=True),  # any lower_coords < 0 are invalid (after world2grid transformation)
+      tf.reduce_any(upper_coords > max_vals, axis=-1, keep_dims=True))  # any upper_coords > max_vals are invalid (after world2grid transformation)
+  # log.info('is_invalid: ' + str(is_invalid.shape))  # (1, 32, 1)
   log.info('is_invalid vs lower_coords: %s vs %s' %
            (repr(is_invalid.get_shape().as_list()),
             repr(lower_coords.get_shape().as_list())))
@@ -145,9 +154,17 @@ def interpolate(grid, samples, world2grid):
            repr(lower_coords.get_shape().as_list()))
   upper_coords = tf.where_v2(is_invalid, 0, upper_coords)
 
-  lca = tf.split(lower_coords, 3, axis=-1)[::-1]
-  uca = tf.split(upper_coords, 3, axis=-1)[::-1]
-  aca = tf.unstack(alpha, axis=-1)[::-1]
+  lca = tf.split(lower_coords, 3, axis=-1)[::-1]  # type: list - split lower_coords into 3 equal-len arrays, and reverse their order
+  uca = tf.split(upper_coords, 3, axis=-1)[::-1]  # type: list
+  aca = tf.unstack(alpha, axis=-1)[::-1]  # type: list
+
+  # log.info(type(lower_coords))
+  # log.info(type(tf.split(lower_coords, 3, axis=-1)))
+  # log.info(type(tf.split(lower_coords, 3, axis=-1)[::-1]))
+  log.info('lower_coords: ' + str(lower_coords.shape))  # (1, 32, 3)
+  log.info('lca: ' + str(lca[0].shape))  # (1, 32, 1)
+  log.info('uca: ' + str(uca[0].shape))  # (1, 32, 1)
+  log.info('aca: ' + str(aca[0].shape))  # (1, 32)
 
   lca[0] = tf.ensure_shape(lca[0], [batch_size, sample_count, 1])
   lca[1] = tf.ensure_shape(lca[1], [batch_size, sample_count, 1])
@@ -159,6 +176,12 @@ def interpolate(grid, samples, world2grid):
   batch_indices = tf.constant(batch_indices, dtype=tf.int32)
 
   def batch_gather_nd(source, index_list):
+    # log.info('batch_indices: ' + str(batch_indices.shape))  # (1, 32, 1)
+    # log.info('index_list: ' + str(np.shape(index_list)))  # (3,)
+    # log.info('index_list: ' + str(index_list))  # (3,) (list of (1, 32, 1) tensors)
+    # log.info('source: ' + str(source.shape))  # (1, 32, 32, 32)
+    # log.info('tf.concat([batch_indices] + index_list, axis=-1): ' + str(tf.concat([batch_indices] + index_list, axis=-1).shape))  # (1, 32, 4)
+    # log.info('tf.gather_nd(source, tf.concat([batch_indices] + index_list, axis=-1)): ' + str(tf.gather_nd(source, tf.concat([batch_indices] + index_list, axis=-1)).shape))  # (1, 32)
     return tf.gather_nd(source,
                         tf.concat([batch_indices] + index_list, axis=-1))
 
@@ -184,6 +207,7 @@ def interpolate(grid, samples, world2grid):
   log.info(
       'is_invalid vs sdf coords: %s vs %s' %
       (repr(is_invalid.get_shape().as_list()), repr(sdf.get_shape().as_list())))
+  # log.info('TYPES ' + str(is_invalid.dtype) + str(type(1e-5)) + str(sdf.dtype))  # <dtype: 'bool'><class 'float'><dtype: 'float32'>
   sdf = tf.where_v2(is_invalid, 1e-5, sdf)
 
   sdf = tf.ensure_shape(sdf, [batch_size, sample_count, 1])

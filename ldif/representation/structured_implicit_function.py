@@ -408,12 +408,14 @@ def _tile_for_symgroups(model_config, elements):
     elements have been tiled according to the model configuration's symmetry
     group description.
   """
-  left_right_sym_count = model_config.hparams.lyr
+  left_right_sym_count = model_config.hparams.lyr  # 16
+  # log.info('left_right_sym_count: ' + str(left_right_sym_count))
   assert len(elements.get_shape().as_list()) >= 3
   # The first K elements get reflected with left-right symmetry (z-axis) as
   # needed.
-  if left_right_sym_count:
+  if left_right_sym_count:  # Add 16 symmetry elements on other side
     first_k = elements[:, :left_right_sym_count, ...]
+    # log.info('first_k: ' + str(first_k.shape))  # When concatenated with iparams, (1, 16, 32)
     elements = tf.concat([elements, first_k], axis=1)
   # TODO(kgenova) As additional symmetry groups are added, add their tiling.
   return elements
@@ -434,8 +436,10 @@ def _generate_symgroup_samples(model_config, samples):
     Tensor with shape [batch_size, effective_element_count, sample_count, 3].
   """
   assert len(samples.get_shape().as_list()) == 3
+  # log.info(samples.shape)  # (1, 1024, 3)
   samples = tf_util.tile_new_axis(
       samples, axis=1, length=model_config.hparams.sc)
+  # log.info(samples.shape)  # (1, 32, 1024, 3)
 
   left_right_sym_count = model_config.hparams.lyr
 
@@ -443,6 +447,7 @@ def _generate_symgroup_samples(model_config, samples):
     first_k = samples[:, :left_right_sym_count, :]
     first_k = geom_util.z_reflect(first_k)
     samples = tf.concat([samples, first_k], axis=1)
+  # log.info(samples.shape)  # (1, 48, 1024, 3)
   return samples
 
 
@@ -482,7 +487,7 @@ def _transform_samples(samples, tx):
 class StructuredImplicit(object):
   """A (batch of) structured implicit function(s)."""
 
-  def __init__(self, model_config, constants, centers, radii, iparams, net):
+  def __init__(self, model_config, constants, centers, radii, iparams, net):  # Stores explicit and implicit params
     batching_dims = constants.get_shape().as_list()[:-2]
     batching_rank = len(batching_dims)
     if batching_rank == 0:
@@ -792,6 +797,7 @@ class StructuredImplicit(object):
       raise ValueError('Unrecognized ipe hparam: %s' %
                        self._model_config.hparams.ipe)
     else:
+      log.info('self._iparams: ' + str(self._iparams))  # (1, 32, 32)
       iparams = _tile_for_symgroups(self._model_config, self._iparams)
       eec = iparams.get_shape().as_list()[-2]
       sample_eec = local_samples.get_shape().as_list()[-3]
@@ -799,6 +805,8 @@ class StructuredImplicit(object):
         raise ValueError(
             'iparams have element count %i, local samples have element_count %i'
             % (eec, sample_eec))
+      log.info('iparams: ' + str(iparams))  # (1, 48, 32)
+      log.info('local_samples: ' + str(local_samples))  # (1, 48, 1024, 3)
       values = self.net.eval_implicit_parameters(iparams, local_samples)
       # TODO(kgenova) Maybe this should be owned by a different piece of code?
       if self._model_config.hparams.ipe == 'e':
@@ -847,7 +855,7 @@ class StructuredImplicit(object):
     weights = tf.transpose(weights, perm=perm)
     return weights
 
-  def class_at_samples(self, samples, apply_class_transfer=True):
+  def class_at_samples(self, samples, apply_class_transfer=True):  # DECODER
     """Computes the function value of the implicit function at input samples.
 
     Args:
@@ -870,6 +878,8 @@ class StructuredImplicit(object):
           local_weights: A [..., element_count, sample_count, 1] Tensor. The
             influence weights of the local decisions.
     """
+    log.info('class_at_samples')
+    # log.info('samples: ' + str(samples))  # (1, 1024, 3)
     batching_dims = samples.get_shape().as_list()[:-2]
     batching_rank = len(batching_dims)
     # For now:
@@ -880,16 +890,22 @@ class StructuredImplicit(object):
     #   batching_dims = [1]
     sample_count = samples.get_shape().as_list()[-2]
 
+    # log.info('constants, centers, radii: ' + str(self._constants.shape) + ' ' + str(self._centers.shape) + ' ' + str(self._radii.shape))
+    # (1, 32, 1) (1, 32, 3) (1, 32, 6)
     effective_constants = _tile_for_symgroups(self._model_config,
                                               self._constants)
     effective_centers = _tile_for_symgroups(self._model_config, self._centers)
     effective_radii = _tile_for_symgroups(self._model_config, self._radii)
+    # log.info('effective_constants, effective_centers, effective_radii: ' + str(effective_constants.shape) + ' ' + str(effective_centers.shape) + ' ' + str(effective_radii.shape))
+    # (1, 48, 1) (1, 48, 3) (1, 48, 6)
 
-    effective_samples = _generate_symgroup_samples(self._model_config, samples)
+    effective_samples = _generate_symgroup_samples(self._model_config, samples)  # (1, 48, 1024, 3)
+    # log.info('effective_samples: ' + str(effective_samples))
     # The samples have shape [batch_size, effective_elt_count, sample_count, 3]
-    effective_element_count = get_effective_element_count(self._model_config)
+    effective_element_count = get_effective_element_count(self._model_config)  # 48
+    # log.info('effective_element_count: ' + str(effective_element_count))
 
-    per_element_constants, per_element_weights = (
+    per_element_constants, per_element_weights = (  # Gaussian
         quadrics.compute_shape_element_influences(
             constants_to_quadrics(effective_constants), effective_centers,
             effective_radii, effective_samples))
@@ -906,9 +922,11 @@ class StructuredImplicit(object):
         'l': tf.reduce_logsumexp,
         'v': tf.compat.v1.math.reduce_variance,
     }
-    agg_fun = agg_fun_dict[self._model_config.hparams.ag]
+    agg_fun = agg_fun_dict[self._model_config.hparams.ag]  # reduce_sum (Sigma into one array)
+    # log.info('agg_fun: ' + str(agg_fun))
 
-    if self._model_config.hparams.ipe == 'f':
+    if self._model_config.hparams.ipe == 'f':  # False in LDIF
+      # log.info('self._model_config.hparams.ipe == f')
       local_decisions = per_element_constants * per_element_weights
       local_weights = per_element_weights
       sdf = agg_fun(local_decisions, axis=batching_rank)
@@ -920,35 +938,49 @@ class StructuredImplicit(object):
     # [batch_size, element_count, sample_count, 3], while the current samples
     # have shape [batch_size, sample_count, 3]. This is because each sample
     # should be evaluated in the relative coordinate system of the
-    if self._model_config.hparams.ipe in ['t', 'e']:
+    if self._model_config.hparams.ipe in ['t', 'e']:  # True in LDIF
+      # log.info('self._model_config.hparams.ipe in [t, e]')
       effective_world2local = _tile_for_symgroups(self._model_config,
-                                                  self.world2local)
+                                                  self.world2local)  # (1, 48, 4, 4)
+      # log.info('effective_world2local: ' + str(effective_world2local.shape))
       local_samples = _transform_samples(effective_samples,
-                                         effective_world2local)
+                                         effective_world2local)  # (1, 48, 1024, 3)
+      # log.info('local_samples: ' + str(local_samples.shape))
 
-      implicit_values = self.implicit_values(local_samples)
+      implicit_values = self.implicit_values(local_samples)  # (1, 48, 1024, 1)
+      # log.info('implicit_values: ' + str(implicit_values.shape))
 
-    if self._model_config.hparams.ipe == 't':
-      multiplier = 1.0 if self._model_config.hparams.ipc == 't' else 0.0
-      residuals = 1 + multiplier * implicit_values
+    if self._model_config.hparams.ipe == 't':  # True in LDIF
+      # log.info('self._model_config.hparams.ipe == t (decoder)')
+      multiplier = 1.0 if self._model_config.hparams.ipc == 't' else 0.0  # 1.0 in LDIF
+      # log.info('multiplier: ' + str(multiplier))
+      residuals = 1 + multiplier * implicit_values  # implicit_values -- result of OccNet  # (1, 48, 1024, 1)
+      # log.info('residuals: ' + str(residuals.shape))
       # Each element is c * w * (1 + OccNet(x')):
-      local_decisions = per_element_constants * per_element_weights * residuals
-      local_weights = per_element_weights
-      sdf = agg_fun(local_decisions, axis=batching_rank)
+      local_decisions = per_element_constants * per_element_weights * residuals  # (1, 48, 1024, 1)
+      # log.info('local_decisions: ' + str(local_decisions.shape))
+      local_weights = per_element_weights  # (1, 48, 1024, 1)
+      # log.info('local_weights: ' + str(local_weights.shape))
+      sdf = agg_fun(local_decisions, axis=batching_rank)  # (1, 1024, 1)
+      # log.info('sdf: ' + str(sdf.shape))
 
-    if self._model_config.hparams.ipe in ['f', 't']:
+    if self._model_config.hparams.ipe in ['f', 't']:  # True in LDIF
+      # log.info('self._model_config.hparams.ipe in [f, t]')
       # Need to map from the metaball influence to something that's < 0 inside.
       if apply_class_transfer:
+        log.info('apply_class_transfer')
         sdf = sdf_util.apply_class_transfer(
             sdf,
             self._model_config,
             soft_transfer=True,
             offset=self._model_config.hparams.lset)
 
-    if self._model_config.hparams.ipc != 't':
+    if self._model_config.hparams.ipc != 't':  # False in LDIF
+      log.info('self._model_config.hparams.ipc != t')
       return sdf, (local_decisions, local_weights)
 
-    if self._model_config.hparams.ipe == 'e':
+    if self._model_config.hparams.ipe == 'e':  # False in LDIF
+      log.info('self._model_config.hparams.ipe == e')
       local_decisions = implicit_values
       weighted_constants = per_element_weights * tf.abs(per_element_constants)
       occnet_weights = tf.nn.softmax(weighted_constants, axis=batching_rank)

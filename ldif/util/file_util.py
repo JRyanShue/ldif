@@ -67,6 +67,7 @@ def read_grd(path):
   """Reads a GAPS .grd file into a (tx, grd) pair."""
   with base_util.FS.open(path, 'rb') as f:
     content = f.read()
+  # log.info('type(content) == ' + str(type(content)))  # <class 'bytes'>
   res = struct.unpack('iii', content[:4 * 3])
   vcount = res[0] * res[1] * res[2]
   # if res[0] != 32 or res[1] != 32 or res[2] != 32:
@@ -78,6 +79,9 @@ def read_grd(path):
   content = content[4 * 16:]
   grd = struct.unpack('f' * vcount, content[:4 * vcount])
   grd = np.array(grd).reshape(res).astype(np.float32)
+  # log.info('tx: ' + str(tx.shape) + ' grd: ' + str(grd.shape))  # (4, 4), (32, 32, 32)
+  
+  # print('tx: ' + str(tx.shape) + ' grd: ' + str(grd.shape))
   return tx, grd
 
 

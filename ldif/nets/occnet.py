@@ -432,7 +432,7 @@ def multishape_occnet_decoder(embedding, samples, apply_sigmoid, model_config):
           normalizer_params=None)
     ensure_shape(sample_embeddings,
                  [batch_size, sample_count, sample_embedding_length])
-    for i in range(resnet_layer_count):
+    for i in range(resnet_layer_count):  # OccNet Layers!
       sample_embeddings = batched_occnet_resnet_layer(embedding,
                                                       sample_embeddings,
                                                       'fc_resnet_layer_%i' % i,
@@ -478,12 +478,14 @@ def occnet_decoder(embedding, samples, apply_sigmoid, model_config):
   Returns:
     Tensor with shape [batch_size, sample_count, 1].
   """
-  if model_config.hparams.hyo == 't':
+  if model_config.hparams.hyo == 't':  # False in LDIF
+    print('model_config.hparams.hyo == t')
     samples = math_util.nerfify(samples, 10, flatten=True, interleave=True)
     sample_len = 60
   else:
     sample_len = 3
-  if model_config.hparams.dd == 't':
+  if model_config.hparams.dd == 't':  # False in LDIF
+    print('model_config.hparams.dd == t')
     tf.logging.info(
         'BID0: Running SS Occnet Decoder with input shapes embedding=%s, samples=%s',
         repr(embedding.get_shape().as_list()),
@@ -498,6 +500,9 @@ def occnet_decoder(embedding, samples, apply_sigmoid, model_config):
   ensure_shape(embedding, [batch_size, embedding_length])
   ensure_shape(samples, [batch_size, -1, sample_len])
   # Debugging:
+  # print('embedding: ' + str(embedding.shape))  # (48, 32)
+  # print('samples: ' + str(samples.shape))  # (48, 1024, 3)
+  # print('apply_sigmoid: ' + str(apply_sigmoid))
   vals = multishape_occnet_decoder(embedding, samples, apply_sigmoid,
                                    model_config)
   return vals

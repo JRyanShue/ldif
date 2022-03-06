@@ -24,8 +24,14 @@ train.py (main) -> local_inputs.py (make_dataset) -> process_element.py (parse_e
 
 Uses numpy to read .sdf and .pts files. These file extensions don't mean anything, just part of the name
 
-Ti transformation:
+Ti transformation (done)
 
+LDIF Decoder at structured_implicit_function.py (class_at_samples, ~line 855)
+OccNet outputs are computed by structured_implicit_function.py implicit_values (~line 774)
+-> model.py eval_implicit_parameters (line ~423) -> line ~468 -> ~276
+
+ldif\datasets\process_element.py lines 71, 76: Grid and world2grid used for element center loss. 
+Actual parsing in ldif\inference\example.py
 
 ## Environment
 

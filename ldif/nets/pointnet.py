@@ -14,6 +14,7 @@
 # Lint as: python3
 """Implementation of PointNet network."""
 
+from ldif.util.tf_util import log
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as contrib_layers
@@ -164,6 +165,8 @@ def pointnet_depr(points,
   point_positions = points[..., 0:3]
   point_features = points[..., 3:]
   feature_count = points.get_shape().as_list()[-1] - 3
+  print('pointnet_depr')
+  print(str(batch_size) + ' ' + str(point_count) + ' ' + str(point_positions) + ' ' + str(point_features) + ' ' + str(feature_count))
   with tf.variable_scope('pointnet', reuse=tf.AUTO_REUSE):
     if apply_learned_ortho_tx:
       with tf.variable_scope('learned_transformation'):
@@ -197,7 +200,8 @@ def pointnet_depr(points,
           stride=[1, 1],
           scope='conv2')
 
-    if apply_learned_64d_tx:
+    if apply_learned_64d_tx:  # False in LDIF, as specified by paper
+      # log.info('apply_learned_64d_tx == True')
       with tf.variable_scope('learned_feature_transformation'):
         feature_transformation = point_set_to_feature_transformation(
             net, output_dimensionality=64)

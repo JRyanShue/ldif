@@ -49,6 +49,9 @@ FLAGS = flags.FLAGS
 
 def set_train_op(model_config):
   """Sets the train op for a single weights update."""
+  # print('model_config.hparams.opt:', model_config.hparams.opt)  # adm
+  # print('Learning Rate:', model_config.hparams.lr)  # 5e-05
+  # print(model_config.hparams.sync, model_config.hparams.ob)  # f, t
   with tf.name_scope('train-op-creation'):
     if model_config.hparams.opt == 'adm':
       optimizer = tf.train.AdamOptimizer(
@@ -61,7 +64,7 @@ def set_train_op(model_config):
           learning_rate=model_config.hparams.lr, momentum=0.9)
     # In TPU training this wraps the optimizer in a CrossShardOptimizer for
     #   you.
-    if model_config.hparams.sync == 't':
+    if model_config.hparams.sync == 't':  # False in LDIF training
       assert model_config.hparams.gpuc > 0
       assert model_config.hparams.vbs > 0
       optimizer = tf.train.SyncReplicasOptimizer(
@@ -72,7 +75,7 @@ def set_train_op(model_config):
       optimizer = model_config.wrap_optimizer(optimizer)
     variables_to_train = tf.compat.v1.trainable_variables()
     update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-    if model_config.hparams.ob == 'f':
+    if model_config.hparams.ob == 'f':  # False in LDIF training
       variables_to_train = contrib_framework.filter_variables(
           variables_to_train, exclude_patterns=['explicit_embedding_cnn'])
       update_ops = contrib_framework.filter_variables(
@@ -143,11 +146,14 @@ def sif_transcoder(model_config):
   # model_config.export_signature_def_map[
   #     'autoencoder'] = prediction.export_signature_def()
   structured_implicit = prediction.structured_implicit
+  print('structured_implicit:', structured_implicit)
 
-  if not model_config.inference:
+  if not model_config.inference:  # True when training
+    print('not model_config.inference')
     loss.set_loss(model_config, training_example, structured_implicit)
 
-  if model_config.train:
+  if model_config.train:  # True when training
+    print('model_config.train')
     summarize.add_train_summaries(model_config, prediction)
     set_train_op(model_config)
   elif model_config.eval:

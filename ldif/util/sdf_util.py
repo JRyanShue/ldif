@@ -38,8 +38,8 @@ def apply_class_transfer(sdf, model_config, soft_transfer, offset, dtype=None):
   # If the prediction defines the surface boundary at a location other than
   # zero, we have to offset before we apply the classification transfer:
   if offset:
-    sdf -= offset
-  if soft_transfer:
+    sdf -= offset  # No effect in LDIF
+  if soft_transfer:  # False in LDIF
     if model_config.hparams.lhdn == 't':
       with tf.variable_scope('lhdn', reuse=tf.AUTO_REUSE):
         tf.logging.info('Getting hdn variable in scope %s',

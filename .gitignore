@@ -14,6 +14,14 @@ test_ds
 *.grd
 *.obj
 *.ply
+*.off
+*.h5
+*.tfrecords
+*.npz
+*.pts
+*orig_to_gaps.txt
+*train.txt
 *.png
 *.sdf
 shapenet_subsample_ds
+Numbers
