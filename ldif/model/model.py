@@ -39,8 +39,8 @@ class Observation(object):
   """An observation that is seen by a network."""
 
   def __init__(self, model_config, training_example):
-    print(model_config)
-    print(training_example)
+    # print(model_config)
+    # print(training_example)
     # Auxiliaries:
     samp = model_config.hparams.samp
     if 'p' in samp:  # True in LDIF
@@ -261,8 +261,10 @@ class StructuredImplicitModel(object):
   """An instance of a network that predicts a structured implicit function."""
 
   def __init__(self, model_config, name):
-    if model_config.hparams.arch == 'efcnn':
+    if model_config.hparams.arch == 'efcnn':  # True in LDIF
+      # log.info('efcnn')
       self.inference_fun = cnn.early_fusion_cnn
+      # log.info(self.inference_fun.summary())  # Doesn't work
     elif model_config.hparams.arch == 'mfcnn':
       self.inference_fun = cnn.mid_fusion_cnn
     elif model_config.hparams.arch == 'pn':

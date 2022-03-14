@@ -28,7 +28,7 @@ from ldif.util.file_util import log
 # pylint: enable=g-bad-import-order
 
 
-def load_example_dict(example_directory, log_level='verbose'):  # log_level=None
+def load_example_dict(example_directory, log_level=None):  # log_level='verbose'):  # log_level=None
   """Loads an example from disk and makes a str:numpy dictionary out of it."""
   if log_level:
     log.set_level(log_level)

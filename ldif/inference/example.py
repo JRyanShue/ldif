@@ -204,18 +204,18 @@ class InferenceExample(object):
   @classmethod
   def from_directory(cls, dirpath, verbose=True):
     """Creates an example from a meshes2dataset mesh subdirectory."""
-    print('from_directory')
+    # print('from_directory')
     if dirpath[-1] == '/':
       dirpath = dirpath[:-1]
-    print(os.path.basename(dirpath))
+    # print(os.path.basename(dirpath))
     mesh_hash = os.path.splitext(os.path.basename(dirpath))[0]
-    print(mesh_hash)
+    # print(mesh_hash)
     prepath = dirpath[:dirpath.rfind(mesh_hash)]
-    print(prepath)
+    # print(prepath)
     assert prepath[-1] == '/'
     prepath = prepath[:-1]
     split, synset = prepath.split('/')[-2:]
-    print(split, synset)
+    # print(split, synset)
     ex = cls(split=split, synset_or_cat=synset,
              mesh_hash=mesh_hash, dynamic=True, verbose=verbose)
     # pylint: disable=protected-access

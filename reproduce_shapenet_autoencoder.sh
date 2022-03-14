@@ -52,6 +52,3 @@ python eval.py --dataset_directory $dataset --model_directory $models \
   --experiment_name single-shape-ldif --split test --log_level verbose \
   --use_inference_kernel --result_directory $results --save_ldifs \
   --save_results --save_meshes --visualize
-
-
-

@@ -174,6 +174,7 @@ def main(argv):
   if len(argv) > 1:
     raise app.UsageError('Too many command-line arguments.')
   tf.disable_v2_behavior()
+  # tf.enable_eager_execution()
   log.set_level(FLAGS.log_level)
 
   log.info('Making dataset...')
@@ -224,6 +225,7 @@ def main(argv):
   with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as session:
     writer = tf.summary.FileWriter(f'{experiment_dir}/log', session.graph)
     log.info('Initializing variables...')
+    # tf.enable_eager_execution()
     session.run([init_op])
 
     if FLAGS.visualize:
@@ -251,7 +253,9 @@ def main(argv):
       log.info(f'Parsed to {initial_index}')
     start_time = time.time()
     log_every = 10
-    for i in range(initial_index, FLAGS.train_step_count):
+    for i in range(initial_index, FLAGS.train_step_count):  # The actual training loop
+      # log.info('Training step')
+      # print('Eager Execution.')
       log.verbose(f'Starting step {i}...')
       is_summary_step = i % FLAGS.summary_step_interval == 0
       if is_summary_step:
@@ -259,9 +263,9 @@ def main(argv):
             [model_config.train_op, summary_op, model_config.loss])
         writer.add_summary(summaries, i)
       else:
-        print(model_config.train_op, model_config.loss)
+        # print(model_config.train_op, model_config.loss)
         _, loss = session.run([model_config.train_op, model_config.loss])
-        print(_)
+        # print(_)
       if not (i % log_every):
         end_time = time.time()
         steps_per_second = float(log_every) / (end_time - start_time)

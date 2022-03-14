@@ -37,7 +37,7 @@ RADII_EPS = 1e-10
 
 
 def _unflatten(model_config, vector):
-  log.set_level('verbose')
+  # log.set_level('verbose')
   # vector shape: (1, 32, 10)
   # log.verbose('Unflattening vector of shape %s.' % str(vector.shape))
   """Given a flat shape vector, separates out the individual parameter sets."""
@@ -719,7 +719,7 @@ class StructuredImplicit(object):
     # We assume the center is an XYZ position for this transformation:
     # TODO(kgenova) Update this transformation to account for rotation.
 
-    log.set_level('verbose')
+    # log.set_level('verbose')
     log.verbose('Computing world2local transformations.')
 
     if self._model_config.hparams.tx == 'i':

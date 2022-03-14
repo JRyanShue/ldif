@@ -14,7 +14,7 @@
 # Lint as: python3
 """Loss functions for training Structured Implicit Functions."""
 
-from ldif.util.tf_util import log
+# from ldif.util.tf_util import log
 import numpy as np
 import tensorflow as tf
 
@@ -28,15 +28,22 @@ from ldif.util import math_util
 from ldif.util import sdf_util
 # pylint: enable=g-bad-import-order
 
+from ldif.util.file_util import log
+
 
 def bounding_box_constraint_error(samples, box):
+  # log.info('bounding_box_constraint_error')
   if not isinstance(box.lower,
-                    float) and len(box.lower.get_shape().as_list()) < 3:
+                    float) and len(box.lower.get_shape().as_list()) < 3:  # False in LDIF
+    # log.info('not isinstance')
     box.lower = tf.reshape(box.lower, [1, 1, 3])
     box.upper = tf.reshape(box.upper, [1, 1, 3])
+  # log.info('samples: ' + str(samples.shape))  # (1, 32, 3)
   lower_error = tf.maximum(box.lower - samples, 0.0)
   upper_error = tf.maximum(samples - box.upper, 0.0)
+  # log.info('lower_error: ' + str(lower_error.shape) + ', upper_error: ' + str(upper_error.shape))  # (1, 32, 3), (1, 32, 3)
   constraint_error = lower_error * lower_error + upper_error * upper_error
+  # log.info('constraint_error: ' + str(constraint_error.shape))  # (1, 32, 3)
   return constraint_error
 
 
@@ -151,19 +158,23 @@ def center_nn_loss(model_config, training_example, structured_implicit):  # pyli
 def inside_box_loss(model_config, _, structured_implicit):
   """Loss that centers should be inside a fixed size bounding box."""
   element_centers = structured_implicit.element_centers
-  if model_config.hparams.wm == 'f':
+  if model_config.hparams.wm == 'f':  # True in LDIF
+    # log.info('model_config.hparams.wm == f')
     bounding_box = shapenet.BoundingBox(lower=-0.7, upper=0.7)
-  elif model_config.hparams.wm == 't':
+  elif model_config.hparams.wm == 't':  # False in LDIF
+    # log.info('model_config.hparams.wm == t')
     bounding_box = shapenet.BoundingBox(
         lower=np.array([-.75, -.075, -.75], dtype=np.float32),
         upper=np.array([.75, .075, .75], dtype=np.float32))
 
-  if model_config.hparams.rsl != 1.0:
+  if model_config.hparams.rsl != 1.0:  # False in LDIF
+    # log.info('model_config.hparams.rsl != 1.0')
     bounding_box.lower *= model_config.hparams.rsl
     bounding_box.upper *= model_config.hparams.rsl
 
   bounding_box_error = tf.reduce_mean(
       bounding_box_constraint_error(element_centers, bounding_box))
+  # log.info('model_config.hparams.ibblw: ' + str(model_config.hparams.ibblw))  # 10.0
   outside_bounding_box_loss = model_config.hparams.ibblw * bounding_box_error
   summarize.summarize_loss(model_config, outside_bounding_box_loss,
                            'fixed_bounding_box_loss')
@@ -370,15 +381,19 @@ def compute_loss(model_config, training_example, structured_implicit):
   # tensorboard entry.
   loss_fun_dict = {
       'u': uniform_sample_loss,
+      # 'u': None,
       'ns': near_surface_sample_loss,
+      # 'ns': None,
       'ec': shape_element_center_loss,
       'oc': old_shape_element_center_loss,
       'm': shape_element_center_magnitude_loss,
       'gd': element_center_lowres_grid_direct_loss,
       'gs': element_center_lowres_grid_squared_loss,
       'gi': element_center_lowres_grid_inside_loss,
+      # 'gi': None,
       'gf': smooth_element_center_lowres_grid_inside_loss,
       'bb': inside_box_loss,
+      # 'bb': None,  # Removing this loss doesn't prevent training
       'xv': center_variance_loss,
       'xp': center_nn_loss,
       'xw': overlap_loss,
@@ -388,12 +403,15 @@ def compute_loss(model_config, training_example, structured_implicit):
   for key, loss_fun in loss_fun_dict.items():
     if key in model_config.hparams.loss:
       print('key:', key)
-      loss = loss_fun(model_config, training_example, structured_implicit)
-      losses.append(loss)
+      if loss_fun is not None:
+        loss = loss_fun(model_config, training_example, structured_implicit)
+        losses.append(loss)
   # There must be at least one loss:
   assert losses
-  print('losses:', losses)
-  return tf.add_n(losses)
+  log.set_level('info')
+  log.info('Losses')
+  # log.info('losses: ' + str(losses))
+  return tf.add_n(losses), losses
 
 
 def set_loss(model_config, training_example, structured_implicit):
@@ -406,4 +424,4 @@ def set_loss(model_config, training_example, structured_implicit):
   # print('Loss computed')
   name = 'final-loss'
   tf.summary.scalar('%s-%s/final_loss_value' % (training_example.split, name),
-                    model_config.loss)
+                    model_config.loss[0])

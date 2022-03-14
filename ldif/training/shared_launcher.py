@@ -30,6 +30,8 @@ from ldif.training import summarize
 from tensorflow.contrib import framework as contrib_framework
 from tensorflow.contrib import training as contrib_training
 
+from ldif.util.file_util import log
+
 
 FLAGS = flags.FLAGS
 # Assumptions the new code makes:
@@ -82,7 +84,7 @@ def set_train_op(model_config):
           update_ops, exclude_patterns=['explicit_embedding_cnn'])
 
     model_config.train_op = contrib_training.create_train_op(
-        model_config.loss,
+        model_config.loss[0],
         optimizer=optimizer,
         update_ops=update_ops,
         variables_to_train=variables_to_train,
@@ -148,6 +150,7 @@ def sif_transcoder(model_config):
   structured_implicit = prediction.structured_implicit
   print('structured_implicit:', structured_implicit)
 
+  # log.info('shared_launcher')
   if not model_config.inference:  # True when training
     print('not model_config.inference')
     loss.set_loss(model_config, training_example, structured_implicit)
