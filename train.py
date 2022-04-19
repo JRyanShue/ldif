@@ -108,6 +108,9 @@ flags.DEFINE_boolean('reserve_memory_for_inference_kernel', True,
                      ' Automatically disabled on MacOS.')
 
 
+print(f'PATH: {sys.path}')
+
+
 def build_model_config(dataset):
   """Creates the ModelConfig object, which contains model hyperparameters."""
   # TODO(kgenova) This needs to somehow at least support LDIF/SIF/SingleView.
@@ -176,6 +179,7 @@ def main(argv):
   tf.disable_v2_behavior()
   # tf.enable_eager_execution()
   log.set_level(FLAGS.log_level)
+  log.info(f'summary_step_interval: {FLAGS.summary_step_interval}')
 
   log.info('Making dataset...')
   if not FLAGS.dataset_directory:
@@ -183,7 +187,7 @@ def main(argv):
   if not os.path.isdir(FLAGS.dataset_directory):
     raise ValueError(f'No dataset directory found at {FLAGS.dataset_directory}')
   # TODO(kgenova) This batch size should match.
-  dataset = local_inputs.make_dataset(
+  dataset = local_inputs.make_dataset(  # DATASET
       FLAGS.dataset_directory,
       mode='train',
       batch_size=FLAGS.batch_size,
@@ -223,10 +227,26 @@ def main(argv):
       per_process_gpu_memory_fraction=allowable_fraction)
 
   with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as session:
+    log.info(f'experiment_dir: {experiment_dir}')
+    log.info(f'graph: {session.graph}')
     writer = tf.summary.FileWriter(f'{experiment_dir}/log', session.graph)
     log.info('Initializing variables...')
     # tf.enable_eager_execution()
     session.run([init_op])
+
+    total_parameters = 0
+    for variable in tf.trainable_variables():
+      # shape is an array of tf.Dimension
+      shape = variable.get_shape()
+      print(shape)
+      print(len(shape))
+      variable_parameters = 1
+      for dim in shape:
+          print(dim)
+          variable_parameters *= dim.value
+      print(variable_parameters)
+      total_parameters += variable_parameters
+    log.info(f'total_parameters: {total_parameters}')
 
     if FLAGS.visualize:
       visualize_data(session, model_config.inputs['dataset'])
@@ -252,13 +272,14 @@ def main(argv):
       initial_index = int(initial_index)
       log.info(f'Parsed to {initial_index}')
     start_time = time.time()
-    log_every = 10
+    log_every = 1
     for i in range(initial_index, FLAGS.train_step_count):  # The actual training loop
       # log.info('Training step')
       # print('Eager Execution.')
       log.verbose(f'Starting step {i}...')
       is_summary_step = i % FLAGS.summary_step_interval == 0
       if is_summary_step:
+        log.info(f'Starting summary for step {i}...')
         _, summaries, loss = session.run(
             [model_config.train_op, summary_op, model_config.loss])
         writer.add_summary(summaries, i)
@@ -266,12 +287,15 @@ def main(argv):
         # print(model_config.train_op, model_config.loss)
         _, loss = session.run([model_config.train_op, model_config.loss])
         # print(_)
-      if not (i % log_every):
+      if not (i % log_every) or i == 0:
         end_time = time.time()
         steps_per_second = float(log_every) / (end_time - start_time)
         start_time = end_time
-        log.info(f'Step: {i}\tLoss: {loss}\tSteps/second: {steps_per_second}')
-
+        # log.info(_)  # Loss
+        # log.info(f'Step: {i}\tLoss (uniform, nss, element centers, inside box): {loss[0:2]}\tSteps/second: {steps_per_second}')
+        log.info(f'Step: {i}\tLoss (uniform, nss, element centers, inside box): {loss}\tSteps/second: {steps_per_second}')
+        # log.info(f'Step: {i}\tLoss (uniform, nss, element centers, inside box): {loss}\tSteps/second: {steps_per_second}')
+  
       is_checkpoint_step = i % FLAGS.checkpoint_interval == 0
       if is_checkpoint_step or i == FLAGS.train_step_count - 1:
         ckpt_path = os.path.join(checkpoint_dir, 'model.ckpt')

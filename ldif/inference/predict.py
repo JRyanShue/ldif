@@ -239,7 +239,7 @@ class DepthEncoder(TrainedNetwork):
         self.tx = None
       observation = sdf_model.Observation(model_config, training_example)
       imp_net = sdf_model.StructuredImplicitModel(model_config, 'imp_net')
-      prediction = imp_net.forward(observation)
+      prediction = imp_net.forward(observation)[0]  # [0] needed for logging-enabling modifications
       structured_implicit = prediction.structured_implicit
       self.packed_vector = structured_implicit.vector
       # *phew* we have set up the graph... now we need to pull the weights.

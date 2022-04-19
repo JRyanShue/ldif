@@ -25,3 +25,4 @@ test_ds
 *.sdf
 shapenet_subsample_ds
 Numbers
+watertight_ds

@@ -190,6 +190,8 @@ def main(argv):
   if len(argv) > 1:
     raise app.UsageError('Too many command-line arguments.')
 
+  print(FLAGS.use_gpu_for_tensorflow)  # True by default
+
   log.set_level(FLAGS.log_level)
   tf.disable_v2_behavior()
 

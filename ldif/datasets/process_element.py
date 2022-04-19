@@ -80,7 +80,7 @@ def load_example_dict(example_directory, log_level=None):  # log_level='verbose'
   # log.info('surface_point_samples.shape: ' + str(surface_point_samples.shape))
   end_t = time.time()
   log.verbose(f'surface points: {end_t - start_t}')
-  log.verbose(f'load_example_dict total time: {end_t - entry_t}')
+  log.info(f'load_example_dict total time: {end_t - entry_t}')
   return {
       'bounding_box_samples': bounding_box_samples,
       'depth_renders': depth_renders,
@@ -137,6 +137,7 @@ def parse_tf_example(example_proto):
 
 # Cannot print within here, I think because eager execution disabled.
 def _example_dict_tf_func_wrapper(mesh_orig_path):
+  # log.info(mesh_orig_path)
   # tf.enable_eager_execution()
   mesh_orig_path = mesh_orig_path.decode(sys.getdefaultencoding())
   # print('mesh_orig_path:', mesh_orig_path)

@@ -1,0 +1,220 @@
+Loss at epoch 0: 0.05950508653713226
+nss_loss: 0.04724910855293274, uniform_loss: 0.012245969846844673, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 10: 0.05242381631923675
+nss_loss: 0.049482136964797974, uniform_loss: 0.0029316686559468508, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 20: 0.05262872963739395
+nss_loss: 0.04444582387804985, uniform_loss: 0.008172893896698952, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 30: 0.04607037096811294
+nss_loss: 0.04505578801035881, uniform_loss: 0.0010045729577541351, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 40: 0.046171609457263944
+nss_loss: 0.04303775355219841, uniform_loss: 0.003123845672234893, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 50: 0.05311766653848648
+nss_loss: 0.04924262315034866, uniform_loss: 0.0038650324568152428, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 60: 0.04775437354637146
+nss_loss: 0.04601109027862549, uniform_loss: 0.0017332746647298336, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 70: 0.04934959128094673
+nss_loss: 0.046426303684711456, uniform_loss: 0.002913278993219137, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 80: 0.0505359807570076
+nss_loss: 0.04668418690562248, uniform_loss: 0.0038417852483689785, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 90: 0.050064899172315595
+nss_loss: 0.04866025969386101, uniform_loss: 0.0013946290127933025, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 100: 0.05483453735304832
+nss_loss: 0.048654500395059586, uniform_loss: 0.006170026026666164, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 110: 0.04725548266960144
+nss_loss: 0.04541606456041336, uniform_loss: 0.0018294085748493671, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 120: 0.04972760393811226
+nss_loss: 0.04583914205431938, uniform_loss: 0.00387845141813159, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 130: 0.05156334131551742
+nss_loss: 0.04512706398963928, uniform_loss: 0.006426268257200718, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 140: 0.04796042680335998
+nss_loss: 0.046875517815351486, uniform_loss: 0.001074897707439959, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 150: 0.05028037741375923
+nss_loss: 0.04737945273518562, uniform_loss: 0.002890914212912321, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 160: 0.05433131023837089
+nss_loss: 0.04662926867604256, uniform_loss: 0.007692032493650913, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 170: 0.04841366424752235
+nss_loss: 0.04703568294644356, uniform_loss: 0.001367970835417509, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 180: 0.04554607733679771
+nss_loss: 0.04358450695872307, uniform_loss: 0.0019515588646754622, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 190: 0.0550414250750637
+nss_loss: 0.04791588336229324, uniform_loss: 0.0071155303157866, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 200: 0.05087054907871246
+nss_loss: 0.04611664637923241, uniform_loss: 0.0047438908368349075, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 210: 0.049227677430639265
+nss_loss: 0.04563894867897034, uniform_loss: 0.003578717354685068, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 220: 0.05347966044736862
+nss_loss: 0.046325478702783585, uniform_loss: 0.007144172675907612, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 230: 0.04398917048765182
+nss_loss: 0.042990006506443024, uniform_loss: 0.0009891538647934794, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 240: 0.049653932597169874
+nss_loss: 0.04561113938689232, uniform_loss: 0.004032784141600132, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 250: 0.047539670165309904
+nss_loss: 0.0455394946038723, uniform_loss: 0.001990166725590825, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 260: 0.049463991220722196
+nss_loss: 0.04447677731513977, uniform_loss: 0.004977204836905003, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 270: 0.04535123720360756
+nss_loss: 0.04352011904120445, uniform_loss: 0.0018211085116490722, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 280: 0.04176561176372528
+nss_loss: 0.040166039019823074, uniform_loss: 0.0015895627439022064, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 290: 0.04709291845155716
+nss_loss: 0.04225354269146919, uniform_loss: 0.004829365760087967, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 300: 0.04491134747458458
+nss_loss: 0.04225607588887215, uniform_loss: 0.002645261352881789, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 310: 0.046198953088054655
+nss_loss: 0.04326341673731804, uniform_loss: 0.0029255254194140434, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 320: 0.04008387043667793
+nss_loss: 0.03993320092558861, uniform_loss: 0.00014065916184335947, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 330: 0.04374099537325859
+nss_loss: 0.04070911556482315, uniform_loss: 0.003021871205419302, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 340: 0.038463473464975355
+nss_loss: 0.0371592752635479, uniform_loss: 0.0012941884342581034, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 350: 0.04020943105898423
+nss_loss: 0.03505733236670494, uniform_loss: 0.005077081732451916, elem_center_loss: 7.501602850480036e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 360: 0.03956317825440219
+nss_loss: 0.03776126727461815, uniform_loss: 0.0016290973871946335, elem_center_loss: 0.00017281545523455813, outside_bounding_box_loss: 0.0
+Loss at epoch 370: 0.031411057040834967
+nss_loss: 0.03051450289785862, uniform_loss: 0.0008055628859438002, elem_center_loss: 9.099178090149146e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 380: 0.037162359178027925
+nss_loss: 0.03244483098387718, uniform_loss: 0.004633191041648388, elem_center_loss: 8.433622117977697e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 390: 0.03583406937647139
+nss_loss: 0.03259073942899704, uniform_loss: 0.0031684301793575287, elem_center_loss: 7.48997681168235e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 400: 0.033263654013215564
+nss_loss: 0.0315275676548481, uniform_loss: 0.0015772603219375014, elem_center_loss: 0.0001588245230307833, outside_bounding_box_loss: 0.0
+Loss at epoch 410: 0.03359459538310688
+nss_loss: 0.032107751816511154, uniform_loss: 0.0013270224444568157, elem_center_loss: 0.0001598206564776207, outside_bounding_box_loss: 0.0
+Loss at epoch 420: 0.029490650963637
+nss_loss: 0.028753383085131645, uniform_loss: 0.0004942811210639775, elem_center_loss: 0.00024298704847968273, outside_bounding_box_loss: 0.0
+Loss at epoch 430: 0.031337600429158785
+nss_loss: 0.03033907525241375, uniform_loss: 0.0008614553371444345, elem_center_loss: 0.0001370704216772097, outside_bounding_box_loss: 0.0
+Loss at epoch 440: 0.031798992450962064
+nss_loss: 0.028064018115401268, uniform_loss: 0.0037249657325446606, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 450: 0.02750416292337009
+nss_loss: 0.026738999411463737, uniform_loss: 0.0006292451871559024, elem_center_loss: 0.00013591913965770386, outside_bounding_box_loss: 0.0
+Loss at epoch 460: 0.02947269689245654
+nss_loss: 0.02764607034623623, uniform_loss: 0.0017512165941298008, elem_center_loss: 7.541041775179687e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 470: 0.028146295021901132
+nss_loss: 0.025513334199786186, uniform_loss: 0.0026229501236230135, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 480: 0.029275724809298517
+nss_loss: 0.027839723974466324, uniform_loss: 0.0014259916497394443, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 490: 0.030449690444659484
+nss_loss: 0.02769705094397068, uniform_loss: 0.0024910192005336285, elem_center_loss: 0.0002616198344938894, outside_bounding_box_loss: 0.0
+Loss at epoch 500: 0.02630759045077324
+nss_loss: 0.024824779480695724, uniform_loss: 0.0014728012029081583, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 510: 0.03058202526920543
+nss_loss: 0.027695372700691223, uniform_loss: 0.002814879408106208, elem_center_loss: 7.177292757735571e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 520: 0.027963817403399434
+nss_loss: 0.02544770948588848, uniform_loss: 0.002443513600155711, elem_center_loss: 7.259501584717408e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 530: 0.0271016286273098
+nss_loss: 0.025489259511232376, uniform_loss: 0.0016023600473999977, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 540: 0.026935680122174132
+nss_loss: 0.024062393233180046, uniform_loss: 0.0027382788248360157, elem_center_loss: 0.00013500852981935735, outside_bounding_box_loss: 0.0
+Loss at epoch 550: 0.024953257437477113
+nss_loss: 0.023932745680212975, uniform_loss: 0.0010105017572641373, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 560: 0.024884920712242128
+nss_loss: 0.024172445759177208, uniform_loss: 0.0007024648366495967, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 570: 0.025662074774461304
+nss_loss: 0.022800611332058907, uniform_loss: 0.002723361598327756, elem_center_loss: 0.00013810114558271161, outside_bounding_box_loss: 0.0
+Loss at epoch 580: 0.025832737009654046
+nss_loss: 0.02513015642762184, uniform_loss: 0.0006925706402398646, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 590: 0.027092978503236772
+nss_loss: 0.024879200384020805, uniform_loss: 0.0022037688177078962, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 600: 0.025089026895930608
+nss_loss: 0.02379685640335083, uniform_loss: 0.0012202637735754251, elem_center_loss: 7.19069518349957e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 610: 0.02553651688305094
+nss_loss: 0.024501647800207138, uniform_loss: 0.0009014492970891297, elem_center_loss: 0.00013341961113168805, outside_bounding_box_loss: 0.0
+Loss at epoch 620: 0.026309911344110905
+nss_loss: 0.02575807087123394, uniform_loss: 0.0004805776698049158, elem_center_loss: 7.126312321418358e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 630: 0.02552867390385315
+nss_loss: 0.02394416555762291, uniform_loss: 0.0013831538381054997, elem_center_loss: 0.0002013546245400634, outside_bounding_box_loss: 0.0
+Loss at epoch 640: 0.025394855212101938
+nss_loss: 0.025100870057940483, uniform_loss: 0.00028397495043464005, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 650: 0.026238473855462862
+nss_loss: 0.0243493914604187, uniform_loss: 0.0017404931131750345, elem_center_loss: 0.00014858951469977146, outside_bounding_box_loss: 0.0
+Loss at epoch 660: 0.02442259134078953
+nss_loss: 0.023088593035936356, uniform_loss: 0.0011363161029294133, elem_center_loss: 0.00019768231833908165, outside_bounding_box_loss: 0.0
+Loss at epoch 670: 0.024752426455297155
+nss_loss: 0.023097578436136246, uniform_loss: 0.0015812969068065286, elem_center_loss: 7.35516944309906e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 680: 0.024562704320249228
+nss_loss: 0.023556463420391083, uniform_loss: 0.0009328480809926987, elem_center_loss: 7.339281886544555e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 690: 0.025940979044566156
+nss_loss: 0.02371220290660858, uniform_loss: 0.0022187656722962856, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 700: 0.02351474590195179
+nss_loss: 0.022182930260896683, uniform_loss: 0.0013218058738857508, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 710: 0.02304352041645701
+nss_loss: 0.02255193330347538, uniform_loss: 0.0003358098620083183, elem_center_loss: 0.00015577640696222756, outside_bounding_box_loss: 0.0
+Loss at epoch 720: 0.02323091635555442
+nss_loss: 0.02233966998755932, uniform_loss: 0.0007979328511282802, elem_center_loss: 9.331340045149853e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 730: 0.025162396143456733
+nss_loss: 0.02202584408223629, uniform_loss: 0.0030649241525679827, elem_center_loss: 7.162721016053069e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 740: 0.023876449859117226
+nss_loss: 0.023166943341493607, uniform_loss: 0.0006374286604113877, elem_center_loss: 7.207768258924849e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 750: 0.023602898548036055
+nss_loss: 0.02157997153699398, uniform_loss: 0.0017633961979299784, elem_center_loss: 0.00025953104594273857, outside_bounding_box_loss: 0.0
+Loss at epoch 760: 0.02405466712606907
+nss_loss: 0.02322199195623398, uniform_loss: 0.0008226648205891252, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 770: 0.024966777566831418
+nss_loss: 0.02409513108432293, uniform_loss: 0.0008006112766452134, elem_center_loss: 7.103503124029189e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 780: 0.023445930476913453
+nss_loss: 0.021502230316400528, uniform_loss: 0.0019336910918354988, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 790: 0.023945941390260773
+nss_loss: 0.022332293912768364, uniform_loss: 0.001317667425610125, elem_center_loss: 0.0002959806339588939, outside_bounding_box_loss: 0.0
+Loss at epoch 800: 0.02267307456733591
+nss_loss: 0.02076856978237629, uniform_loss: 0.0018110015662387013, elem_center_loss: 9.350333513623993e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 810: 0.02377377545945236
+nss_loss: 0.021901749074459076, uniform_loss: 0.0017910964088514447, elem_center_loss: 8.09291612345856e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 820: 0.02308603684769422
+nss_loss: 0.02158774994313717, uniform_loss: 0.0011752140708267689, elem_center_loss: 0.0003230732993915704, outside_bounding_box_loss: 0.0
+Loss at epoch 830: 0.022268503776137115
+nss_loss: 0.02130342647433281, uniform_loss: 0.0008942033164203167, elem_center_loss: 7.087351972270268e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 840: 0.027730219022700116
+nss_loss: 0.02325555309653282, uniform_loss: 0.004273257218301296, elem_center_loss: 0.0002014077765434257, outside_bounding_box_loss: 0.0
+Loss at epoch 850: 0.021973032886610035
+nss_loss: 0.021352170035243034, uniform_loss: 0.0005476953811012208, elem_center_loss: 7.316694639683205e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 860: 0.021966239582428933
+nss_loss: 0.02099648304283619, uniform_loss: 0.0009597467724233866, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 870: 0.020879036841194402
+nss_loss: 0.019952891394495964, uniform_loss: 0.000852104858495295, elem_center_loss: 7.4041170279753e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 880: 0.019442849006185533
+nss_loss: 0.018752334639430046, uniform_loss: 0.0006805042503401637, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 890: 0.021761545598376668
+nss_loss: 0.020319432020187378, uniform_loss: 0.0013699592091143131, elem_center_loss: 7.215483473626415e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 900: 0.01991952608496273
+nss_loss: 0.018953299149870872, uniform_loss: 0.0008918842650018632, elem_center_loss: 7.434214622104662e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 910: 0.0195499733868402
+nss_loss: 0.0188787542283535, uniform_loss: 0.0005942592979408801, elem_center_loss: 7.695898743090583e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 920: 0.020553587149510385
+nss_loss: 0.018741218373179436, uniform_loss: 0.0018023587763309479, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 930: 0.021118831349992456
+nss_loss: 0.019452963024377823, uniform_loss: 0.001594893983565271, elem_center_loss: 7.097469129532729e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 940: 0.01933134361697197
+nss_loss: 0.017329121008515358, uniform_loss: 0.0019922121427953243, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 950: 0.02069752257515465
+nss_loss: 0.018961312249302864, uniform_loss: 0.0015952738467603922, elem_center_loss: 0.00014093671192203538, outside_bounding_box_loss: 0.0
+Loss at epoch 960: 0.01859317996460471
+nss_loss: 0.01750628650188446, uniform_loss: 0.0009527363581582904, elem_center_loss: 0.00013415791946921245, outside_bounding_box_loss: 0.0
+Loss at epoch 970: 0.018827535138566293
+nss_loss: 0.01841817982494831, uniform_loss: 0.0002705225779209286, elem_center_loss: 0.00013883218272427517, outside_bounding_box_loss: 0.0
+Loss at epoch 980: 0.017945787083039285
+nss_loss: 0.01712658815085888, uniform_loss: 0.0008091898052953184, elem_center_loss: 1.001e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 990: 0.018841256700377063
+nss_loss: 0.018611161038279533, uniform_loss: 0.0001588791492395103, elem_center_loss: 7.121575615842708e-05, outside_bounding_box_loss: 0.0
+Loss at epoch 1000: 0.017816954530584687
+nss_loss: 0.0176105834543705, uniform_loss: 6.110878894105554e-05, elem_center_loss: 0.00014526141415821837, outside_bounding_box_loss: 0.0
+Loss at epoch 1010: 0.01956004082821853
+nss_loss: 0.01783537119626999, uniform_loss: 0.001585183897987008, elem_center_loss: 0.00013948596679217603, outside_bounding_box_loss: 0.0
+Loss at epoch 1020: 0.01932027409164737
+nss_loss: 0.01769210770726204, uniform_loss: 0.0015559401363134384, elem_center_loss: 7.222624807189069e-05, outside_bounding_box_loss: 0.0
+---------------------------------------------------------------------------
+KeyboardInterrupt                         Traceback (most recent call last)
+<ipython-input-78-2da0ffaf5447> in <module>()
+----> 1 train()
+
+2 frames
+/usr/local/lib/python3.7/dist-packages/torch/autograd/__init__.py in backward(tensors, grad_tensors, retain_graph, create_graph, grad_variables, inputs)
+    154     Variable._execution_engine.run_backward(
+    155         tensors, grad_tensors_, retain_graph, create_graph, inputs,
+--> 156         allow_unreachable=True, accumulate_grad=True)  # allow_unreachable flag
+    157 
+    158 
+
+KeyboardInterrupt: 

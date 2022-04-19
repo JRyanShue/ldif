@@ -167,8 +167,10 @@ def pointnet_depr(points,
   feature_count = points.get_shape().as_list()[-1] - 3
   print('pointnet_depr')
   print(str(batch_size) + ' ' + str(point_count) + ' ' + str(point_positions) + ' ' + str(point_features) + ' ' + str(feature_count))
+  # print(f'points.shape:{points.shape}')  # (32, 1024, 6)
+  # print(f'apply_learned_ortho_tx: {apply_learned_ortho_tx}')  # False
   with tf.variable_scope('pointnet', reuse=tf.AUTO_REUSE):
-    if apply_learned_ortho_tx:
+    if apply_learned_ortho_tx:  # False in LDIF
       with tf.variable_scope('learned_transformation'):
         transformation, translation = point_set_to_transformation(points)
         transformed_points = tf.matmul(point_positions + translation,

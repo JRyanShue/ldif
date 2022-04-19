@@ -57,7 +57,9 @@ def set_train_op(model_config):
   with tf.name_scope('train-op-creation'):
     if model_config.hparams.opt == 'adm':
       optimizer = tf.train.AdamOptimizer(
-          learning_rate=model_config.hparams.lr, beta1=0.9, beta2=0.999)
+          # learning_rate=model_config.hparams.lr, 
+          learning_rate=0,  # Freeze training for debugging purposes
+          beta1=0.9, beta2=0.999)
     elif model_config.hparams.opt == 'sgd':
       optimizer = tf.train.GradientDescentOptimizer(
           learning_rate=model_config.hparams.lr)
@@ -144,16 +146,21 @@ def sif_transcoder(model_config):
 
   # print('sif transcoder:')
   # THIS IS WHERE THE FEED FORWARD IS CALLED
-  prediction = imp_net.forward(observation)
+  # info_dict = {}
+  # log.info(imp_net.summary)
+  prediction, _activation, _ = imp_net.forward(observation) #, info_dict)
   # model_config.export_signature_def_map[
   #     'autoencoder'] = prediction.export_signature_def()
+  # _ = prediction[1:]  # For debugging
+  # prediction = prediction[0]
   structured_implicit = prediction.structured_implicit
+  # log.info(f'info_dict: {info_dict}')
   print('structured_implicit:', structured_implicit)
 
   # log.info('shared_launcher')
   if not model_config.inference:  # True when training
     print('not model_config.inference')
-    loss.set_loss(model_config, training_example, structured_implicit)
+    loss.set_loss(model_config, training_example, structured_implicit, [_activation, _])
 
   if model_config.train:  # True when training
     print('model_config.train')

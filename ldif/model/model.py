@@ -313,7 +313,7 @@ class StructuredImplicitModel(object):
           if self._model_config.hparams.elr != 1.0:  # False in LDIF
             explicit_parameters = lr_mult(self._model_config.hparams.elr)(
                 explicit_parameters)
-      # Use StructuredImplicit class (get ellipsoids from 32xM dim vector)
+      # Use StructuredImplicit class (get ellipsoids from 32xM dim vector) <- may be wrong note
       sif = structured_implicit_function.StructuredImplicit.from_activation(
           self._model_config, explicit_parameters, self)
       # log.info('explicit_parameters.shape: ' + str(explicit_parameters.shape))
@@ -387,13 +387,19 @@ class StructuredImplicitModel(object):
       log.info('observation: ' + str(observation))
       log.info('structured_implicit: ' + str(sif))
       log.info('embedding: ' + str(embedding))
-      return Prediction(self._model_config, observation, sif, embedding)
+      return Prediction(self._model_config, observation, sif, embedding), explicit_parameters
 
   def forward(self, observation):
+    # log.info('Encoder Forward')  # Logging does not work during training
     """Evaluates the explicit and implicit parameter vectors as a Prediction."""
     if self._model_config.hparams.ia == 'p':  # True in LDIF
       # log.info('self._model_config.hparams.ia == p')
-      return self._global_local_forward(observation)
+      log_values = [observation.surface_points]
+      __global_local_forward = self._global_local_forward(observation)
+      return __global_local_forward[0], __global_local_forward[1], log_values
+
+
+      
     with tf.name_scope(self._name + '/forward'):
       reuse = self._forward_call_count > 0
       tf.logging.info('Call #%i to %s.forward().', self._forward_call_count,
@@ -422,7 +428,7 @@ class StructuredImplicitModel(object):
           structured_implicit_function.StructuredImplicit.from_activation(
               self._model_config, structured_implicit_activations, self))
     return Prediction(self._model_config, observation, structured_implicit,
-                      embedding)
+                      embedding), observation
 
   def eval_implicit_parameters(self, implicit_parameters, samples):
     """Decodes each implicit parameter vector at each of its sample points.

@@ -80,13 +80,16 @@ def make_dataset(directory, batch_size, mode, split):
 
   dataset = tf.data.Dataset.list_files(f'{directory}/{split}/*/*/mesh_orig.ply')  # list of all mesh_orig files
   print('Dataset:', dataset)
+  print(sys.getsizeof(dataset))
   # for element in dataset:
   #   print('Dataset element:', element)
   log.info('Mapping...')
-  if mode == 'train':
+  if mode == 'train':  # True when training (obviously)
+    # log.info('Shuffling and repeating...')
     dataset = dataset.shuffle(buffer_size=2 * batch_size)
-    dataset = dataset.repeat()
+    dataset = dataset.repeat()  # Repeat indefinitely (until stopped)
 
+  log.info(f'cpu_count: {os.cpu_count()}')
   dataset = dataset.map(process_element.parse_example,
       num_parallel_calls=os.cpu_count())
   log.info('dataset: ' + str(dataset))

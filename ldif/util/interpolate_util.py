@@ -186,9 +186,11 @@ def interpolate(grid, samples, world2grid):
                         tf.concat([batch_indices] + index_list, axis=-1))
 
   def lerp(lval, uval, alpha):
+    # log.info(f'LERP vars: {lval.shape}, {uval.shape}, {alpha.shape}')  # (24, 32), (24, 32), (24, 32)
     return lval * (1 - alpha) + uval * (alpha)
 
   def lookup_and_lerp(lidx, uidx, alpha):
+    log.info(f'L&LERP variables: {lidx}, {uidx}, {alpha}')
     return lerp(batch_gather_nd(grid, lidx), batch_gather_nd(grid, uidx), alpha)
 
   c00 = lookup_and_lerp([lca[0], lca[1], lca[2]], [uca[0], lca[1], lca[2]],

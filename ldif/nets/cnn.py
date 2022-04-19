@@ -32,10 +32,14 @@ from ldif.util.file_util import log
 
 def early_fusion_cnn(observation, element_count, element_length, model_config):
   """A cnn that maps 1+ images with 1+ chanels to a feature vector."""
+  log.info('early_fusion_cnn')
   inputs = observation.tensor
-  if model_config.hparams.cnna == 'cnn':
+  if model_config.hparams.cnna == 'cnn':  # False in LDIF. 
+    # log.info('early_fusion_cnn: cnn')
     embedding = net_util.inputs_to_feature_vector(inputs, 1024, model_config)
-  elif model_config.hparams.cnna in ['r18', 'r50', 'h50', 'k50', 's50']:
+  elif model_config.hparams.cnna in ['r18', 'r50', 'h50', 'k50', 's50']:  # True in LDIF.
+    # log.info('early_fusion_cnn: resnet')
+    # log.info(f'model_config.hparams.cnna: {model_config.hparams.cnna}')  # s50
     batch_size, image_count, height, width, channel_count = (
         inputs.get_shape().as_list())
     log.verbose('Input shape to early-fusion cnn: %s' %
@@ -60,6 +64,7 @@ def early_fusion_cnn(observation, element_count, element_length, model_config):
           pooling=None)
       embedding = resnet(im)
     elif model_config.hparams.cnna == 's50':
+      log.info('initializing s50 network')
       with slim.arg_scope(resnet_utils.resnet_arg_scope()):
         embedding_prenorm, _ = contrib_slim_resnet_v2.resnet_v2_50(
             inputs=im,
@@ -68,9 +73,12 @@ def early_fusion_cnn(observation, element_count, element_length, model_config):
             global_pool=True,
             reuse=tf.AUTO_REUSE,
             scope='resnet_v2_50')
+        log.info(f'embedding_prenorm: {embedding_prenorm}')
         embedding_prenorm = tf.reshape(embedding_prenorm,
                                        [model_config.hparams.bs, 2048])
         embedding = tf.nn.l2_normalize(embedding_prenorm, axis=1)
+        log.info(f'embedding: {embedding}')
+      
     elif model_config.hparams.cnna == 'h50':
       log.warning('TF Hub not tested externally.')
       resnet = hub.Module(
@@ -94,7 +102,9 @@ def early_fusion_cnn(observation, element_count, element_length, model_config):
 
   net = embedding
   normalizer, normalizer_params = net_util.get_normalizer_and_mode(model_config)
+  # log.info(f'normalizer: {normalizer}, normalizer_params: {normalizer_params}')  # None, None
   for _ in range(2):
+    # log.info('Adding 2048-d fully connected layer to SIF Encoder.')  # Yes, this runs twice
     net = contrib_layers.fully_connected(
         inputs=net,
         num_outputs=2048,

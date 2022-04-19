@@ -77,7 +77,7 @@ def element_center_lowres_grid_squared_loss(model_config, training_example,
 
 
 def element_center_lowres_grid_inside_loss(model_config, training_example,
-                                           structured_implicit):
+                                           structured_implicit):  # "lowres = low-resolution"
   """Loss that element centers should lie within a voxel of the GT inside."""
   # print('model_config.hparams.igt:', model_config.hparams.igt, 'model_config.hparams.ig:', model_config.hparams.ig)  # 0.044, 1.0
   element_centers = structured_implicit.element_centers
@@ -85,12 +85,13 @@ def element_center_lowres_grid_inside_loss(model_config, training_example,
   print('training_example.world2grid.shape:', training_example.world2grid.shape)  # (1, 4, 4)
   gt_sdf_at_centers, _ = interpolate_util.interpolate(
       training_example.grid, element_centers, training_example.world2grid)
+  gt_sdf_before_simplification = gt_sdf_at_centers
   gt_sdf_at_centers = tf.where_v2(gt_sdf_at_centers > model_config.hparams.igt,
-                                  gt_sdf_at_centers, 0.0)
+                                  gt_sdf_at_centers, 0.0)  # 0.0 if within 0.044 of the shape surface
   mse = model_config.hparams.ig * tf.reduce_mean(
       tf.square(gt_sdf_at_centers + 1e-04)) + 1e-05
   summarize.summarize_loss(model_config, mse, 'lowres_grid_inside_loss')
-  return mse
+  return mse, element_centers#, gt_sdf_at_centers, gt_sdf_before_simplification
 
 
 def smooth_element_center_lowres_grid_inside_loss(model_config,
@@ -258,6 +259,7 @@ def weighted_l2_loss(gt_value, pred_value, weights):
   # be careful about reduction method. Theirs is probably better since the
   # magnitude of the loss isn't affected by the weights. But it would need
   # hparam tuning, so it's left out in the first pass.
+  log.info('Weights: {}'.format(weights))
   return weights * squared_diff
 
 
@@ -281,7 +283,7 @@ def sample_loss(model_config, gt_sdf, structured_implicit, global_samples, name,
     gt_class = tf.tile(
         tf.expand_dims(gt_class, axis=1), [1, model_config.hparams.sc, 1, 1])
     weights = tf.stop_gradient(local_weights)
-  elif model_config.hparams.lrf == 'g':
+  elif model_config.hparams.lrf == 'g':  # True in LDIF
     global_decisions, local_outputs = structured_implicit.class_at_samples(
         global_samples)
     predicted_class = global_decisions
@@ -310,8 +312,8 @@ def sample_loss(model_config, gt_sdf, structured_implicit, global_samples, name,
     weights *= tf.where_v2(is_outside, 1.0, model_config.hparams.ucf)  # ufc == 1.0, so doesn't really do anything here
   loss = weighted_l2_loss(gt_class, predicted_class, weights)
   print(loss.shape)  # (1, 1024, 1)
-  print(tf.reduce_mean(loss).shape)  # () -- Reduce to a single loss value
-  return tf.reduce_mean(loss)
+  # print(tf.reduce_mean(loss).shape)  # () -- Reduce to a single loss value
+  return tf.reduce_mean(loss), loss, gt_class, predicted_class
 
 
 def uniform_sample_loss(model_config, training_example, structured_implicit):
@@ -325,13 +327,14 @@ def uniform_sample_loss(model_config, training_example, structured_implicit):
   tf.logging.info('Building Uniform Sample Loss.')
   tf.logging.info('Uni. Samples shape: %s', str(samples.get_shape().as_list()))
   # print('model_config.hparams.l2w:', model_config.hparams.l2w)  # 1.0
-  loss = model_config.hparams.l2w * sample_loss(
+  _sample_loss = sample_loss(
       model_config,
       gt_sdf,
       structured_implicit,
       samples,
       'uniform_sample',
       apply_ucf=True)
+  loss = model_config.hparams.l2w * _sample_loss[0]
   summarize.summarize_loss(model_config, loss, 'uniform_sample')
   return loss
 
@@ -364,21 +367,23 @@ def near_surface_sample_loss(model_config, training_example,
   # TODO(kgenova) Currently we set ucf=True here because that's how it was...
   # but go back and fix that because it seems bad.
   # print('model_config.hparams.a2w:', model_config.hparams.a2w)  # 0.1
-  loss = model_config.hparams.a2w * sample_loss(
+  _sample_loss = sample_loss(
       model_config,
       gt_sdf,
       structured_implicit,
       samples,
       'ns_sample',
       apply_ucf=True)  # False)
+  loss = model_config.hparams.a2w * _sample_loss[0]
   summarize.summarize_loss(model_config, loss, 'near_surface_sample')
-  return loss
+  return loss, _sample_loss[1:]
 
 
-def compute_loss(model_config, training_example, structured_implicit):
+def compute_loss(model_config, training_example, structured_implicit, extra_info_for_logging=None):
   """Computes the overall loss based on the model configuration."""
   # The keys are kept so short because they are used to autogenerate a
   # tensorboard entry.
+  # structured_implicit stores the element centers. 
   loss_fun_dict = {
       'u': uniform_sample_loss,
       # 'u': None,
@@ -400,27 +405,37 @@ def compute_loss(model_config, training_example, structured_implicit):
   }
 
   losses = []
+  extra_info = []
+  if extra_info_for_logging is not None:
+    extra_info.append({'encoder_info': extra_info_for_logging})
   for key, loss_fun in loss_fun_dict.items():
     if key in model_config.hparams.loss:
       print('key:', key)
       if loss_fun is not None:
         loss = loss_fun(model_config, training_example, structured_implicit)
-        losses.append(loss)
+        if type(loss) == tuple:
+          losses.append(loss[0])
+          extra_info.append(loss[1:])
+        else:
+          losses.append(loss)
   # There must be at least one loss:
   assert losses
   log.set_level('info')
   log.info('Losses')
   # log.info('losses: ' + str(losses))
-  return tf.add_n(losses), losses
+
+  # APPEND VALUES BELOW TO HAVE THEM RETURNED AND EVALUATED IN THE MAIN SESSION
+  return tf.add_n(losses), losses, extra_info
 
 
-def set_loss(model_config, training_example, structured_implicit):
+def set_loss(model_config, training_example, structured_implicit, extra_info_for_logging):
   # TODO(kgenova) Consider returning the add_n result as a tensor, setting
   # the loss in the launcher, and having a separate scalar summarizer in
   # summarize.py
   # print('Computing loss...')
+  # Track structured_implicit to get mid-encoder tensors. 
   model_config.loss = compute_loss(model_config, training_example,
-                                   structured_implicit)
+                                   structured_implicit, extra_info_for_logging)
   # print('Loss computed')
   name = 'final-loss'
   tf.summary.scalar('%s-%s/final_loss_value' % (training_example.split, name),
