@@ -428,7 +428,7 @@ def compute_loss(model_config, training_example, structured_implicit, extra_info
   return tf.add_n(losses), losses, extra_info
 
 
-def set_loss(model_config, training_example, structured_implicit, extra_info_for_logging):
+def set_loss(model_config, training_example, structured_implicit, extra_info_for_logging):  # Follow training_example: it has the sampling function sample_sdf_uniform, etc.
   # TODO(kgenova) Consider returning the add_n result as a tensor, setting
   # the loss in the launcher, and having a separate scalar summarizer in
   # summarize.py

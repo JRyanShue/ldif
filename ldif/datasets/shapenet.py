@@ -124,6 +124,7 @@ class ShapeNetExample(object):
     self._random_lum_render = None
     self._all_surface_points_from_depth = None
     ds = model_config.inputs['dataset']
+    # print(f'ds.bounding_box_samples: {ds.bounding_box_samples}')  # tf tensor
     # print('ps: ', ds.surface_point_samples)
     # if hasattr(ds, 'surface_point_samples'):
     # if (model_config.inputs['proto'] in
@@ -159,10 +160,12 @@ class ShapeNetExample(object):
 
   @property
   def full_uniform_samples(self):
-    if not hasattr(self, '_full_uniform_samples'):
+    if not hasattr(self, '_full_uniform_samples'):  # True in LDIF
+      # dataset entries are TF tensors. 
       self._full_uniform_samples = tf.ensure_shape(
           self._model_config.inputs['dataset'].bounding_box_samples,
           [self._model_config.hparams.bs, 100000, 4])
+    # print('not returning full uniform samples')
     return self._full_uniform_samples
 
   def _subsample(self, samples, sample_count):

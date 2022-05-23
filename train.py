@@ -193,9 +193,13 @@ def main(argv):
       batch_size=FLAGS.batch_size,
       split=FLAGS.split)
 
+  # log.info(f'dataset.bounding_box_samples type: {type(dataset.bounding_box_samples)}')  # tf tensor
+
   # Sets up the hyperparameters and tf.Dataset
   model_config = build_model_config(dataset)  # model_config contains dataset info
   print('Config built.')
+
+  # print(f'model_config.inputs[dataset].bounding_box_samples: {type(model_config.inputs["dataset"].bounding_box_samples)}')  # tf tensor
 
   # Generates the graph for a single train step, including summaries
   shared_launcher.sif_transcoder(model_config)

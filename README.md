@@ -33,6 +33,9 @@ OccNet outputs are computed by structured_implicit_function.py implicit_values (
 ldif\datasets\process_element.py lines 71, 76: Grid and world2grid used for element center loss. 
 Actual parsing in ldif\inference\example.py
 
+Sampling function example: sample_sdf_uniform in ldif/datasets/shapenet.py. 
+Done on GPU, not CPU numpy! Makes a lot of sense. 
+
 ## Environment
 
 To set up the LDIF/SIF environment, follow these steps:

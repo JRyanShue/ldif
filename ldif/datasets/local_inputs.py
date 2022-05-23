@@ -51,6 +51,7 @@ def _make_optimized_dataset(directory, batch_size, mode, split):
 
 def build_dataset_obj(dataset_items, bs):
   dataset_obj = lambda: 0
+  # log.info(f'dataset_items[0]: {type(dataset_items[0])}')  # tf tensor
   dataset_obj.bounding_box_samples = tf.ensure_shape(dataset_items[0],
                                                      [bs, 100000, 4])
   dataset_obj.depth_renders = tf.ensure_shape(dataset_items[1],
@@ -89,13 +90,21 @@ def make_dataset(directory, batch_size, mode, split):
     dataset = dataset.shuffle(buffer_size=2 * batch_size)
     dataset = dataset.repeat()  # Repeat indefinitely (until stopped)
 
+  # log.info(f'dataset element_spec: {dataset.element_spec}')  # dataset returns tf tensors
+
   log.info(f'cpu_count: {os.cpu_count()}')
   dataset = dataset.map(process_element.parse_example,
       num_parallel_calls=os.cpu_count())
   log.info('dataset: ' + str(dataset))
+  # log.info(f'dataset element_spec: {dataset.element_spec}')  # dataset returns tf tensors
 
   bs = batch_size
+
   dataset = dataset.batch(bs, drop_remainder=True).prefetch(1)
 
+  # log.info(f'dataset element_spec: {dataset.element_spec}')  # dataset returns tf tensors
+
+  # log.info(f'dataset: {type(dataset)}')  # tensorflow.python.data.ops.dataset_ops.DatasetV1Adapter
   dataset_items = tf.compat.v1.data.make_one_shot_iterator(dataset).get_next()
+  # log.info(f'dataset_items: {type(dataset_items)}')  # tuple
   return build_dataset_obj(dataset_items, bs)

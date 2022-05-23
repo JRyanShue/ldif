@@ -18,6 +18,7 @@ This code can be aware of the existence of individual datasets, but it can't be
 aware of their internals.
 """
 
+from ldif.util.tf_util import log
 import tensorflow as tf
 
 # LDIF is an internal package, should be imported last.
@@ -37,6 +38,7 @@ def preprocess(model_config):
   # TODO(kgenova) Check if dataset is shapenet. If so, return a ShapeNet
   # training example.
   print('Preprocessing...')
+  # print(f'model_config.inputs[dataset].bounding_box_samples: {type(model_config.inputs["dataset"].bounding_box_samples)}')  # tf tensor
   training_example = shapenet.ShapeNetExample(model_config)
 
   # TODO(kgenova) Look at the model config and verify that nothing is missing.

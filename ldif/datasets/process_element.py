@@ -41,6 +41,7 @@ def load_example_dict(example_directory, log_level=None):  # log_level='verbose'
 
   # The from_directory method should probably optionally take in a synset.
   bounding_box_samples = e.uniform_samples
+  # log.info(f'bounding_box_samples: {type(bounding_box_samples)}')  # ndarray
   end_t = time.time()
   log.verbose(f'Bounding box: {end_t - start_t}')
   start_t = end_t
@@ -80,15 +81,22 @@ def load_example_dict(example_directory, log_level=None):  # log_level='verbose'
   # log.info('surface_point_samples.shape: ' + str(surface_point_samples.shape))
   end_t = time.time()
   log.verbose(f'surface points: {end_t - start_t}')
-  log.info(f'load_example_dict total time: {end_t - entry_t}')
+  # log.info(f'load_example_dict total time: {end_t - entry_t}')
+  # log.info(f'bounding_box_samples: {bounding_box_samples.shape}')
+  # log.info(f'depth_renders: {depth_renders.shape}')
+  # log.info(f'mesh_name: {mesh_name}')
+  # log.info(f'near_surface_samples: {near_surface_samples.shape}')
+  # log.info(f'grid: {grid.shape}')
+  # log.info(f'world2grid: {world2grid.shape}')
+  # log.info(f'surface_point_samples: {surface_point_samples.shape}')
   return {
-      'bounding_box_samples': bounding_box_samples,
-      'depth_renders': depth_renders,
-      'mesh_name': mesh_name,
-      'near_surface_samples': near_surface_samples,
-      'grid': grid,
-      'world2grid': world2grid,
-      'surface_point_samples': surface_point_samples,
+      'bounding_box_samples': bounding_box_samples,  # (100000, 4)
+      'depth_renders': depth_renders,  # (20, 224, 224, 1)
+      'mesh_name': mesh_name,  # 04090263|22
+      'near_surface_samples': near_surface_samples,  # (100000, 4)
+      'grid': grid,  # (32, 32, 32)
+      'world2grid': world2grid,  # (4, 4)
+      'surface_point_samples': surface_point_samples,  # (10000, 6)
   }
 
 

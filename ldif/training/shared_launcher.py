@@ -105,7 +105,8 @@ def sif_transcoder(model_config):
   if not model_config.train:
     model_config.hparams.bs = 1
 
-  if model_config.hparams.rsl != 1.0:
+  # log.info(f'model_config.hparams.rsl: {model_config.hparams.rsl}')  # 1.0
+  if model_config.hparams.rsl != 1.0:  # False in LDIF
     dataset = lambda: 0
     factor = model_config.hparams.rsl
     dataset.factor = factor
