@@ -26,3 +26,4 @@ test_ds
 shapenet_subsample_ds
 Numbers
 watertight_ds
+shapenet
