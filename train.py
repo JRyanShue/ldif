@@ -205,6 +205,7 @@ def main(argv):
 
   experiment_dir = f'{model_root}/sif-transcoder-{FLAGS.experiment_name}'
   checkpoint_dir = f'{experiment_dir}/1-hparams/train/'
+  log.info(f'checkpoint_dir: {checkpoint_dir}')
 
   if FLAGS.reserve_memory_for_inference_kernel and sys.platform != "darwin" and False: # Disabled this block with 'and False' because running on CPU
     current_free = gpu_util.get_free_gpu_memory(0)
