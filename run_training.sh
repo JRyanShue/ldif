@@ -1,4 +1,11 @@
 #!bin/bash
+
+# Install awscli and add to path
+pip install --upgrade --user awscli
+export PATH=~/.local/bin:$PATH
+chmod +x ~/.local/bin
+aws configure
+
 conda env create --name ldif -f environment.yml
 source activate ldif
 # download_{tiny_subsample, shapenet_chair, full_shapenet}.sh

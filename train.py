@@ -275,11 +275,12 @@ def main(argv):
         saver.save(session, ckpt_path, global_step=i)
 
         # zip and upload to s3
+        dataset_type = 'chair'  # 48shape
         log.info(f'Zipping model checkpoints...')  # No compression
-        subprocess.run(['rm', 'ldif_48shape.zip'])
-        subprocess.run(['zip', '-r', '-0', 'ldif_48shape.zip', 'ldif/trained_models'])
+        subprocess.run(['rm', f'ldif_{dataset_type}.zip'])
+        subprocess.run(['zip', '-r', '-0', f'ldif_{dataset_type}.zip', 'ldif/trained_models'])
         log.info(f'Uploading model checkpoints to S3...')
-        subprocess.run(['aws', 's3', 'cp', 'ldif_48shape.zip', 's3://imt-public-datasets/pretrained_models/'])
+        subprocess.run(['aws', 's3', 'cp', f'ldif_{dataset_type}.zip', 's3://imt-public-datasets/pretrained_models/'])
     
     log.info('Done training!')
 

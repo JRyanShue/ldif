@@ -7,9 +7,9 @@ declare -a Classes=('03001627')
 for CATEGORY in ${Classes[@]}
 do
     echo Downloading $CATEGORY...
-    wget https://imt-public-datasets.s3.amazonaws.com/preprocecssed_splits/${CATEGORY}_train.zip
-    wget https://imt-public-datasets.s3.amazonaws.com/preprocecssed_splits/${CATEGORY}_test.zip
-    wget https://imt-public-datasets.s3.amazonaws.com/preprocecssed_splits/${CATEGORY}_val.zip
+    wget https://imt-public-datasets.s3.amazonaws.com/preprocessed_splits/${CATEGORY}_train.zip
+    wget https://imt-public-datasets.s3.amazonaws.com/preprocessed_splits/${CATEGORY}_test.zip
+    wget https://imt-public-datasets.s3.amazonaws.com/preprocessed_splits/${CATEGORY}_val.zip
 done
 
 # Unzip files
