@@ -42,6 +42,8 @@ from ldif.util import file_util
 from ldif.util import gpu_util
 from ldif.util import path_util
 from ldif.util.file_util import log
+
+import subprocess
 # pylint: enable=g-bad-import-order
 # pylint: enable=g-import-not-at-top
 
@@ -271,6 +273,14 @@ def main(argv):
         ckpt_path = os.path.join(checkpoint_dir, 'model.ckpt')
         log.info(f'Writing checkpoint to {ckpt_path}...')
         saver.save(session, ckpt_path, global_step=i)
+
+        # zip and upload to s3
+        log.info(f'Zipping model checkpoints...')  # No compression
+        subprocess.run(['rm', 'ldif_48shape.zip'])
+        subprocess.run(['zip', '-r', '-0', 'ldif_48shape.zip', 'ldif/trained_models'])
+        log.info(f'Uploading model checkpoints to S3...')
+        subprocess.run(['aws', 's3', 'cp', 'ldif_48shape.zip', 's3://imt-public-datasets/pretrained_models/'])
+    
     log.info('Done training!')
 
 
