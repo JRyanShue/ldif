@@ -30,7 +30,17 @@ from ldif.util.file_util import log
 
 def _make_optimized_dataset(directory, batch_size, mode, split):
   filenames = glob.glob(f'{directory}/optimized/{split}/*.tfrecords')
-  log.verbose(f'Making dataset from the following files: {filenames}')
+  log.info(f'Making dataset from the following files: {filenames}')
+  '''
+  Ex: Making dataset from the following files: 
+  ['/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00000-of-00007.tfrecords', 
+  '/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00001-of-00007.tfrecords', 
+  '/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00002-of-00007.tfrecords', 
+  '/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00003-of-00007.tfrecords', 
+  '/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00004-of-00007.tfrecords', 
+  '/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00005-of-00007.tfrecords', 
+  '/mnt/c/users/jryan/Documents/GitHub/ldif/watertight_ds/optimized/train/train-00006-of-00007.tfrecords']
+  '''
   dataset = tf.data.TFRecordDataset(filenames=filenames, compression_type='GZIP',
         buffer_size=None, num_parallel_reads=8)
   log.info('Mapping...')
