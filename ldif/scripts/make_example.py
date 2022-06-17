@@ -26,6 +26,7 @@ from ldif.util import gaps_util
 from ldif.util import path_util
 from ldif.inference import example
 from ldif.util.file_util import log
+from ldif.util import base_util
 # pylint: enable=g-bad-import-order
 
 
@@ -73,6 +74,8 @@ def mesh_to_example(codebase_root_dir, mesh_path, dirpath, skip_existing, log_le
     precomputed_samples = e.surface_samples_from_dodeca
     assert precomputed_samples.shape[0] == 100000
     assert precomputed_samples.shape[1] == 6
+    with base_util.FS.open(f"{sample_path[:sample_path.index('.')]}.dimgs", 'wb') as f:
+      f.write(precomputed_samples.astype(np.float32).tobytes())
     file_util.write_points(sample_path, precomputed_samples)
   else:
     log.verbose(f'Skipping surface sample precompution for {dirpath}, it\'s already done.')
