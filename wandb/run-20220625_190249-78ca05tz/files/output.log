@@ -1,0 +1,10 @@
+INFO: Making dataset...
+INFO: Optimized dataset detected at /content/shapenet_ldif/optimized
+INFO: Making dataset from the following files: []
+INFO: Mapping...
+INFO: is_invalid vs lower_coords: [24, 32, 1] vs [24, 32, 3]
+INFO: Post-where lower_coords: [24, 32, 3]
+INFO: is_invalid vs sdf coords: [24, 32, 1] vs [24, 32, 1]
+INFO: In-out image summaries have been removed.
+INFO: checkpoint_dir: /content/ldif/ldif/trained_models//sif-transcoder-ldif/1-hparams/train/
+INFO: Initializing variables...
