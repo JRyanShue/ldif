@@ -1,0 +1,66 @@
+INFO: Making dataset...
+INFO: Optimized dataset detected at /content/shapenet_ldif/optimized
+INFO: Making dataset from the following files: []
+INFO: Mapping...
+INFO: is_invalid vs lower_coords: [24, 32, 1] vs [24, 32, 3]
+INFO: Post-where lower_coords: [24, 32, 3]
+INFO: is_invalid vs sdf coords: [24, 32, 1] vs [24, 32, 1]
+INFO: In-out image summaries have been removed.
+Traceback (most recent call last):
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/framework/ops.py", line 2380, in get_attr
+    c_api.TF_OperationGetAttrValueProto(self._c_op, name, buf)
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Operation 'imp_net/forward/imp_net/forward_1/implicit_embedding_net/concat' has no attr named '_XlaCompile'.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/gradients_util.py", line 345, in _MaybeCompile
+    xla_compile = op.get_attr("_XlaCompile")
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/framework/ops.py", line 2384, in get_attr
+    raise ValueError(str(e))
+ValueError: Operation 'imp_net/forward/imp_net/forward_1/implicit_embedding_net/concat' has no attr named '_XlaCompile'.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "train.py", line 295, in <module>
+    app.run(main)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/absl/app.py", line 299, in run
+    _run_main(main, args)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/absl/app.py", line 250, in _run_main
+    sys.exit(main(argv))
+  File "train.py", line 202, in main
+    shared_launcher.sif_transcoder(model_config)
+  File "/content/ldif/ldif/training/shared_launcher.py", line 150, in sif_transcoder
+    set_train_op(model_config)
+  File "/content/ldif/ldif/training/shared_launcher.py", line 88, in set_train_op
+    colocate_gradients_with_ops=False)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/contrib/training/python/training/training.py", line 450, in create_train_op
+    colocate_gradients_with_ops=colocate_gradients_with_ops)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/training/optimizer.py", line 512, in compute_gradients
+    colocate_gradients_with_ops=colocate_gradients_with_ops)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/gradients_impl.py", line 158, in gradients
+    unconnected_gradients)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/gradients_util.py", line 679, in _GradientsHelper
+    lambda: grad_fn(op, *out_grads))
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/gradients_util.py", line 350, in _MaybeCompile
+    return grad_fn()  # Exit early
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/gradients_util.py", line 679, in <lambda>
+    lambda: grad_fn(op, *out_grads))
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/array_grad.py", line 228, in _ConcatGradV2
+    op, grad, start_value_index=0, end_value_index=-1, dim_index=-1)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/array_grad.py", line 156, in _ConcatGradHelper
+    out_grads.append(array_ops.slice(grad, begin, size))
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/array_ops.py", line 855, in slice
+    return gen_array_ops._slice(input_, begin, size, name=name)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/ops/gen_array_ops.py", line 9222, in _slice
+    "Slice", input=input, begin=begin, size=size, name=name)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/framework/op_def_library.py", line 794, in _apply_op_helper
+    op_def=op_def)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/util/deprecation.py", line 507, in new_func
+    return func(*args, **kwargs)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/framework/ops.py", line 3357, in create_op
+    attrs, op_def, compute_device)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/framework/ops.py", line 3426, in _create_op_internal
+    op_def=op_def)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/framework/ops.py", line 1748, in __init__
+    self._traceback = tf_stack.extract_stack()
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/util/tf_stack.py", line 164, in extract_stack
+    _source_filter_stacks[thread_key])
+KeyboardInterrupt

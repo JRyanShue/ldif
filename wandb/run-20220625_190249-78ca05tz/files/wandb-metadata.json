@@ -1,0 +1,33 @@
+{
+    "os": "Linux-5.4.188+-x86_64-with-debian-buster-sid",
+    "python": "3.6.10",
+    "heartbeatAt": "2022-06-25T19:02:50.488128",
+    "startedAt": "2022-06-25T19:02:49.696649",
+    "docker": null,
+    "gpu": "Tesla P100-PCIE-16GB",
+    "gpu_count": 1,
+    "cpu_count": 2,
+    "cuda": null,
+    "args": [
+        "--dataset_directory",
+        "/content/shapenet_ldif",
+        "--batch_size",
+        "24",
+        "--experiment_name",
+        "ldif",
+        "--model_type",
+        "ldif"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/JRyanShue/ldif.git",
+        "commit": "1ead3fcbb56c83bb0e03b28b2e814e32806bbd46"
+    },
+    "email": null,
+    "root": "/content/ldif",
+    "host": "d3e0626b4d91",
+    "username": "root",
+    "executable": "/usr/local/envs/ldif/bin/python"
+}

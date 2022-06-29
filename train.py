@@ -44,6 +44,9 @@ from ldif.util import path_util
 from ldif.util.file_util import log
 
 import subprocess
+
+# import wandb
+
 # pylint: enable=g-bad-import-order
 # pylint: enable=g-import-not-at-top
 
@@ -178,6 +181,8 @@ def main(argv):
   tf.disable_v2_behavior()
   log.set_level(FLAGS.log_level)
 
+  # wandb.init(project='imt-ldif-baseline')
+
   log.info('Making dataset...')
   if not FLAGS.dataset_directory:
     raise ValueError('A dataset directory must be provided.')
@@ -252,7 +257,7 @@ def main(argv):
       initial_index = int(initial_index)
       log.info(f'Parsed to {initial_index}')
     start_time = time.time()
-    log_every = 10
+    log_every = 50
     for i in range(initial_index, FLAGS.train_step_count):
       log.verbose(f'Starting step {i}...')
       is_summary_step = i % FLAGS.summary_step_interval == 0
@@ -267,6 +272,10 @@ def main(argv):
         steps_per_second = float(log_every) / (end_time - start_time)
         start_time = end_time
         log.info(f'Step: {i}\tLoss: {loss}\tSteps/second: {steps_per_second}')
+        # wandb.log({'Loss': loss})
+        # f = open("loss_list.txt", "a")
+        # f.write(f'{loss}\n')
+        # f.close()
 
       is_checkpoint_step = i % FLAGS.checkpoint_interval == 0
       if is_checkpoint_step or i == FLAGS.train_step_count - 1:
@@ -275,12 +284,12 @@ def main(argv):
         saver.save(session, ckpt_path, global_step=i)
 
         # zip and upload to s3
-        dataset_type = 'chair'  # 48shape
-        log.info(f'Zipping model checkpoints...')  # No compression
-        subprocess.run(['rm', f'ldif_{dataset_type}.zip'])
-        subprocess.run(['zip', '-r', '-0', f'ldif_{dataset_type}.zip', 'ldif/trained_models'])
-        log.info(f'Uploading model checkpoints to S3...')
-        subprocess.run(['aws', 's3', 'cp', f'ldif_{dataset_type}.zip', 's3://imt-public-datasets/pretrained_models/'])
+        # dataset_type = 'chair'  # 48shape
+        # log.info(f'Zipping model checkpoints...')  # No compression
+        # subprocess.run(['rm', f'ldif_{dataset_type}.zip'])
+        # subprocess.run(['zip', '-r', '-0', f'ldif_{dataset_type}.zip', 'ldif/trained_models'])
+        # log.info(f'Uploading model checkpoints to S3...')
+        # subprocess.run(['aws', 's3', 'cp', f'ldif_{dataset_type}.zip', 's3://imt-public-datasets/pretrained_models/'])
     
     log.info('Done training!')
 

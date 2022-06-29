@@ -1,0 +1,24 @@
+INFO: Making dataset...
+INFO: Optimized dataset detected at /content/shapenet_ldif/optimized
+INFO: Making dataset from the following files: []
+INFO: Mapping...
+INFO: is_invalid vs lower_coords: [24, 32, 1] vs [24, 32, 3]
+INFO: Post-where lower_coords: [24, 32, 3]
+INFO: is_invalid vs sdf coords: [24, 32, 1] vs [24, 32, 1]
+INFO: In-out image summaries have been removed.
+INFO: checkpoint_dir: /content/ldif/ldif/trained_models//sif-transcoder-ldif/1-hparams/train/
+INFO: Initializing variables...
+Traceback (most recent call last):
+  File "train.py", line 295, in <module>
+    app.run(main)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/absl/app.py", line 299, in run
+    _run_main(main, args)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/absl/app.py", line 250, in _run_main
+    sys.exit(main(argv))
+  File "train.py", line 254, in main
+    saver.restore(session, latest_checkpoint)
+  File "/usr/local/envs/ldif/lib/python3.6/site-packages/tensorflow_core/python/training/saver.py", line 1277, in restore
+    raise ValueError("Can't load save_path when it is None.")
+ValueError: Can't load save_path when it is None.
+INFO: Checkpoint root /content/ldif/ldif/trained_models//sif-transcoder-ldif/1-hparams/train/ exists, attempting to resume.
+INFO: Latest checkpoint: None
